@@ -1,7 +1,7 @@
 <div class="page-container">
   <div class="toolbar">
-    <h1>{{ 'franchises.title' | translate }}</h1>
-    <button class="btn primary" (click)="openCreate()">+ {{ 'franchises.new' | translate }}</button>
+    <h1>{{ 'entreprises.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'entreprises.new' | translate }}</button>
   </div>
 
   <input
@@ -14,30 +14,30 @@
 
   @if (loading()) {
     <p class="muted">{{ 'common.loading' | translate }}</p>
-  } @else if (franchises().length === 0) {
+  } @else if (entreprises().length === 0) {
     <p class="muted">{{ 'common.empty' | translate }}</p>
   } @else {
     <table>
       <tr>
-        <th>{{ 'franchises.name' | translate }}</th>
-        <th>{{ 'franchises.businessType' | translate }}</th>
-        <th>{{ 'franchises.city' | translate }}</th>
+        <th>{{ 'entreprises.name' | translate }}</th>
+        <th>{{ 'entreprises.businessType' | translate }}</th>
+        <th>{{ 'entreprises.city' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
       </tr>
-      @for (franchise of franchises(); track franchise.id) {
+      @for (entreprise of entreprises(); track entreprise.id) {
         <tr>
-          <td>{{ franchise.name }}</td>
-          <td>{{ ('franchises.businessType.' + franchise.businessType) | translate }}</td>
-          <td>{{ franchise.city }}</td>
+          <td>{{ entreprise.name }}</td>
+          <td>{{ ('entreprises.businessType.' + entreprise.businessType) | translate }}</td>
+          <td>{{ entreprise.city }}</td>
           <td>
-            <span class="badge" [class.success]="franchise.isActive" [class.neutral]="!franchise.isActive">
-              {{ (franchise.isActive ? 'common.active' : 'common.inactive') | translate }}
+            <span class="badge" [class.success]="entreprise.isActive" [class.neutral]="!entreprise.isActive">
+              {{ (entreprise.isActive ? 'common.active' : 'common.inactive') | translate }}
             </span>
           </td>
           <td class="row-actions">
-            <button class="btn" (click)="openEdit(franchise)">{{ 'common.edit' | translate }}</button>
-            <button class="btn danger" (click)="remove(franchise)">{{ 'common.delete' | translate }}</button>
+            <button class="btn" (click)="openEdit(entreprise)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(entreprise)">{{ 'common.delete' | translate }}</button>
           </td>
         </tr>
       }
@@ -57,16 +57,16 @@
   @if (showForm()) {
     <div class="modal-backdrop" (click)="closeForm()">
       <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
-        <h2>{{ (editingId() ? 'franchises.editTitle' : 'franchises.new') | translate }}</h2>
+        <h2>{{ (editingId() ? 'entreprises.editTitle' : 'entreprises.new') | translate }}</h2>
 
         <div class="form-grid">
           <label class="full">
-            {{ 'franchises.name' | translate }}
+            {{ 'entreprises.name' | translate }}
             <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
           </label>
 
           <label>
-            {{ 'franchises.businessType' | translate }}
+            {{ 'entreprises.businessType' | translate }}
             <select
               name="businessType"
               [ngModel]="form().businessType"
@@ -74,14 +74,14 @@
               required
             >
               @for (type of businessTypes; track type) {
-                <option [value]="type">{{ ('franchises.businessType.' + type) | translate }}</option>
+                <option [value]="type">{{ ('entreprises.businessType.' + type) | translate }}</option>
               }
             </select>
           </label>
 
           @if (form().businessType === 'ServiceBased') {
             <label>
-              {{ 'franchises.gender' | translate }}
+              {{ 'entreprises.gender' | translate }}
               <select
                 name="gender"
                 [ngModel]="form().gender"
@@ -89,14 +89,14 @@
                 required
               >
                 @for (g of genders; track g) {
-                  <option [value]="g">{{ ('franchises.gender.' + g) | translate }}</option>
+                  <option [value]="g">{{ ('entreprises.gender.' + g) | translate }}</option>
                 }
               </select>
             </label>
           }
 
           <label>
-            {{ 'franchises.city' | translate }}
+            {{ 'entreprises.city' | translate }}
             <input type="text" name="city" [ngModel]="form().city" (ngModelChange)="form.update((f) => ({ ...f, city: $event }))" />
           </label>
           <label>
@@ -104,7 +104,7 @@
             <input type="tel" name="phone" [ngModel]="form().phone" (ngModelChange)="form.update((f) => ({ ...f, phone: $event }))" />
           </label>
           <label class="full">
-            {{ 'franchises.address' | translate }}
+            {{ 'entreprises.address' | translate }}
             <input type="text" name="address" [ngModel]="form().address" (ngModelChange)="form.update((f) => ({ ...f, address: $event }))" />
           </label>
           <label>
@@ -112,9 +112,9 @@
             <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
           </label>
 
-          <label class="full coord-label">{{ 'franchises.fiscal' | translate }}</label>
+          <label class="full coord-label">{{ 'entreprises.fiscal' | translate }}</label>
           <label>
-            {{ 'franchises.matriculeFiscal' | translate }}
+            {{ 'entreprises.matriculeFiscal' | translate }}
             <input
               type="text"
               name="matriculeFiscal"
@@ -124,7 +124,7 @@
             />
           </label>
           <label>
-            {{ 'franchises.registerCommerceNumber' | translate }}
+            {{ 'entreprises.registerCommerceNumber' | translate }}
             <input
               type="text"
               name="registerCommerceNumber"
@@ -133,7 +133,7 @@
             />
           </label>
           <label>
-            {{ 'franchises.legalForm' | translate }}
+            {{ 'entreprises.legalForm' | translate }}
             <input
               type="text"
               name="legalForm"
@@ -142,13 +142,13 @@
             />
           </label>
           <label>
-            {{ 'franchises.website' | translate }}
+            {{ 'entreprises.website' | translate }}
             <input type="text" name="website" [ngModel]="form().website" (ngModelChange)="form.update((f) => ({ ...f, website: $event }))" />
           </label>
 
-          <label class="full coord-label">{{ 'franchises.coordinates' | translate }}</label>
+          <label class="full coord-label">{{ 'entreprises.coordinates' | translate }}</label>
           <label>
-            {{ 'franchises.latitude' | translate }}
+            {{ 'entreprises.latitude' | translate }}
             <input
               type="text"
               name="latitude"
@@ -157,7 +157,7 @@
             />
           </label>
           <label>
-            {{ 'franchises.longitude' | translate }}
+            {{ 'entreprises.longitude' | translate }}
             <input
               type="text"
               name="longitude"
@@ -166,6 +166,25 @@
             />
           </label>
         </div>
+
+        @if (!editingId()) {
+          <label class="full coord-label">{{ 'entreprises.responsable' | translate }}</label>
+          <div class="form-grid">
+            <label class="full">
+              {{ 'entreprises.responsableHint' | translate }}
+              <select
+                name="responsableUserId"
+                [ngModel]="responsableUserId()"
+                (ngModelChange)="responsableUserId.set($event ? +$event : null)"
+              >
+                <option [ngValue]="null">{{ 'entreprises.responsableNone' | translate }}</option>
+                @for (user of users(); track user.id) {
+                  <option [value]="user.id">{{ user.name }} ({{ user.email }})</option>
+                }
+              </select>
+            </label>
+          </div>
+        }
 
         @if (error()) {
           <p class="error">{{ error()! | translate }}</p>

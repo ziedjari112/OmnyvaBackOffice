@@ -19,15 +19,15 @@
   </div>
 
   <div class="right">
-    @if (availableFranchises().length > 0) {
+    @if (availableEntreprises().length > 0) {
       <select
-        class="franchise-select"
-        [value]="franchiseSelectValue()"
-        (change)="onFranchiseChange($any($event.target).value)"
+        class="entreprise-select"
+        [value]="entrepriseSelectValue()"
+        (change)="onEntrepriseChange($any($event.target).value)"
       >
-        <option value="">{{ 'nav.franchise.all' | translate }}</option>
-        @for (franchise of availableFranchises(); track franchise.id) {
-          <option [value]="franchise.id">{{ franchise.name }}</option>
+        <option value="">{{ 'nav.entreprise.all' | translate }}</option>
+        @for (entreprise of availableEntreprises(); track entreprise.id) {
+          <option [value]="entreprise.id">{{ entreprise.name }}</option>
         }
       </select>
     }

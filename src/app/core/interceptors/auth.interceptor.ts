@@ -9,11 +9,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tenantService = inject(TenantService);
 
   const token = authService.accessToken();
-  const franchiseId = tenantService.currentFranchiseId();
+  const entrepriseId = tenantService.currentEntrepriseId();
 
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  if (franchiseId != null) headers['X-Franchise-Id'] = String(franchiseId);
+  if (entrepriseId != null) headers['X-Entreprise-Id'] = String(entrepriseId);
 
   const authedReq = Object.keys(headers).length > 0 ? req.clone({ setHeaders: headers }) : req;
 
@@ -25,7 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return authService.refresh().pipe(
           switchMap(() => {
             const retryHeaders: Record<string, string> = { Authorization: `Bearer ${authService.accessToken()}` };
-            if (franchiseId != null) retryHeaders['X-Franchise-Id'] = String(franchiseId);
+            if (entrepriseId != null) retryHeaders['X-Entreprise-Id'] = String(entrepriseId);
             return next(req.clone({ setHeaders: retryHeaders }));
           }),
           catchError((refreshError: unknown) => {

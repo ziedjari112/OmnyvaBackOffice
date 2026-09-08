@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StaffService } from '../../core/services/staff.service';
-import { FranchiseService } from '../../core/services/franchise.service';
+import { EntrepriseService } from '../../core/services/entreprise.service';
 import { ServiceService } from '../../core/services/service.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { SetStaffWorkingHoursDto, StaffDto, StaffUpsertDto, StaffWorkingHoursDto } from '../../core/models/staff.model';
-import { FranchiseDto } from '../../core/models/franchise.model';
+import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { ServiceDto } from '../../core/models/service.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
@@ -13,7 +13,7 @@ const EMPTY_FORM: StaffUpsertDto = {
   name: '',
   phone: null,
   email: null,
-  franchiseId: 0
+  entrepriseId: 0
 };
 
 const DAYS_OF_WEEK: StaffWorkingHoursDto['dayOfWeek'][] = [
@@ -53,12 +53,12 @@ function toApiTimeValue(time: string): string | null {
 })
 export class Staff {
   private readonly staffService = inject(StaffService);
-  private readonly franchiseService = inject(FranchiseService);
+  private readonly entrepriseService = inject(EntrepriseService);
   private readonly serviceService = inject(ServiceService);
   private readonly i18n = inject(I18nService);
 
   readonly staff = signal<StaffDto[]>([]);
-  readonly franchises = signal<FranchiseDto[]>([]);
+  readonly entreprises = signal<EntrepriseDto[]>([]);
   readonly services = signal<ServiceDto[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
@@ -82,12 +82,12 @@ export class Staff {
 
   constructor() {
     this.load();
-    this.franchiseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.franchises.set(result.items));
+    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
     this.serviceService.getPaged({ pageNumber: 1, pageSize: 500 }).subscribe((result) => this.services.set(result.items));
   }
 
-  get servicesForCurrentFranchise(): ServiceDto[] {
-    return this.services().filter((s) => s.franchiseId === this.form().franchiseId);
+  get servicesForCurrentEntreprise(): ServiceDto[] {
+    return this.services().filter((s) => s.entrepriseId === this.form().entrepriseId);
   }
 
   isServiceAssigned(serviceId: number): boolean {
@@ -170,8 +170,8 @@ export class Staff {
       });
   }
 
-  franchiseName(franchiseId: number): string {
-    return this.franchises().find((f) => f.id === franchiseId)?.name ?? '';
+  entrepriseName(entrepriseId: number): string {
+    return this.entreprises().find((f) => f.id === entrepriseId)?.name ?? '';
   }
 
   onSearchChange(value: string): void {
@@ -189,7 +189,7 @@ export class Staff {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.set({ ...EMPTY_FORM, franchiseId: this.franchises()[0]?.id ?? 0 });
+    this.form.set({ ...EMPTY_FORM, entrepriseId: this.entreprises()[0]?.id ?? 0 });
     this.assignedServiceIds.set(new Set());
     this.workingHours.set([]);
     this.error.set(null);
@@ -202,7 +202,7 @@ export class Staff {
       name: member.name,
       phone: member.phone,
       email: member.email,
-      franchiseId: member.franchiseId
+      entrepriseId: member.entrepriseId
     });
     this.assignedServiceIds.set(new Set());
     this.staffService.getServices(member.id).subscribe((ids) => this.assignedServiceIds.set(new Set(ids)));

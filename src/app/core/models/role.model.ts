@@ -2,7 +2,7 @@ export interface RoleDto {
   id: number;
   name: string;
   description?: string | null;
-  franchiseId?: number | null;
+  entrepriseId?: number | null;
   isSystemRole: boolean;
   isActive: boolean;
   permissions: string[];
@@ -11,7 +11,7 @@ export interface RoleDto {
 export interface RoleUpsertDto {
   name: string;
   description?: string | null;
-  franchiseId?: number | null;
+  entrepriseId?: number | null;
   permissionIds: number[];
 }
 

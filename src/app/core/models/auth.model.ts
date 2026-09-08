@@ -7,7 +7,7 @@ export interface UserRoleAssignmentDto {
   id: number;
   roleId: number;
   roleName: string;
-  franchiseId?: number | null;
+  entrepriseId?: number | null;
 }
 
 export interface UserPermissionOverrideDto {
@@ -51,7 +51,7 @@ export interface UpdateUserDto {
 
 export interface AssignUserRoleDto {
   roleId: number;
-  franchiseId?: number | null;
+  entrepriseId?: number | null;
 }
 
 export interface SetPermissionOverrideDto {

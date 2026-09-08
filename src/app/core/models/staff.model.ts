@@ -3,7 +3,7 @@ export interface StaffDto {
   name: string;
   phone?: string | null;
   email?: string | null;
-  franchiseId: number;
+  entrepriseId: number;
   userId?: number | null;
   isActive: boolean;
 }
@@ -12,7 +12,7 @@ export interface StaffUpsertDto {
   name: string;
   phone?: string | null;
   email?: string | null;
-  franchiseId: number;
+  entrepriseId: number;
   userId?: number | null;
 }
 

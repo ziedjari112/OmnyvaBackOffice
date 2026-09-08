@@ -1,10 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ServiceService } from '../../core/services/service.service';
-import { FranchiseService } from '../../core/services/franchise.service';
+import { EntrepriseService } from '../../core/services/entreprise.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { ServiceDto, ServiceUpsertDto } from '../../core/models/service.model';
-import { FranchiseDto } from '../../core/models/franchise.model';
+import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 const EMPTY_FORM: ServiceUpsertDto = {
@@ -12,7 +12,7 @@ const EMPTY_FORM: ServiceUpsertDto = {
   description: null,
   price: 0,
   durationMinutes: 30,
-  franchiseId: 0
+  entrepriseId: 0
 };
 
 @Component({
@@ -24,11 +24,11 @@ const EMPTY_FORM: ServiceUpsertDto = {
 })
 export class Services {
   private readonly serviceService = inject(ServiceService);
-  private readonly franchiseService = inject(FranchiseService);
+  private readonly entrepriseService = inject(EntrepriseService);
   private readonly i18n = inject(I18nService);
 
   readonly services = signal<ServiceDto[]>([]);
-  readonly franchises = signal<FranchiseDto[]>([]);
+  readonly entreprises = signal<EntrepriseDto[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
   readonly pageNumber = signal(1);
@@ -44,7 +44,7 @@ export class Services {
 
   constructor() {
     this.load();
-    this.franchiseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.franchises.set(result.items));
+    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
   }
 
   load(): void {
@@ -61,8 +61,8 @@ export class Services {
       });
   }
 
-  franchiseName(franchiseId: number): string {
-    return this.franchises().find((f) => f.id === franchiseId)?.name ?? '';
+  entrepriseName(entrepriseId: number): string {
+    return this.entreprises().find((f) => f.id === entrepriseId)?.name ?? '';
   }
 
   onSearchChange(value: string): void {
@@ -80,7 +80,7 @@ export class Services {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.set({ ...EMPTY_FORM, franchiseId: this.franchises()[0]?.id ?? 0 });
+    this.form.set({ ...EMPTY_FORM, entrepriseId: this.entreprises()[0]?.id ?? 0 });
     this.error.set(null);
     this.showForm.set(true);
   }
@@ -92,7 +92,7 @@ export class Services {
       description: service.description,
       price: service.price,
       durationMinutes: service.durationMinutes,
-      franchiseId: service.franchiseId
+      entrepriseId: service.entrepriseId
     });
     this.error.set(null);
     this.showForm.set(true);

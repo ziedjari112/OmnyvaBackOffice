@@ -4,7 +4,7 @@ export interface ProductDto {
   description?: string | null;
   price: number;
   stockQuantity: number;
-  franchiseId: number;
+  entrepriseId: number;
   isActive: boolean;
 }
 
@@ -12,5 +12,5 @@ export interface ProductUpsertDto {
   name: string;
   description?: string | null;
   price: number;
-  franchiseId: number;
+  entrepriseId: number;
 }

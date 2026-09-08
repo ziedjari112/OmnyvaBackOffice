@@ -20,7 +20,7 @@
     <table>
       <tr>
         <th>{{ 'staff.name' | translate }}</th>
-        <th>{{ 'staff.franchise' | translate }}</th>
+        <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'staff.phone' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
@@ -28,7 +28,7 @@
       @for (member of staff(); track member.id) {
         <tr>
           <td>{{ member.name }}</td>
-          <td>{{ franchiseName(member.franchiseId) }}</td>
+          <td>{{ entrepriseName(member.entrepriseId) }}</td>
           <td>{{ member.phone }}</td>
           <td>
             <span class="badge" [class.success]="member.isActive" [class.neutral]="!member.isActive">
@@ -65,15 +65,15 @@
             <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
           </label>
           <label class="full">
-            {{ 'staff.franchise' | translate }}
+            {{ 'staff.entreprise' | translate }}
             <select
-              name="franchiseId"
-              [ngModel]="form().franchiseId"
-              (ngModelChange)="form.update((f) => ({ ...f, franchiseId: +$event }))"
+              name="entrepriseId"
+              [ngModel]="form().entrepriseId"
+              (ngModelChange)="form.update((f) => ({ ...f, entrepriseId: +$event }))"
               required
             >
-              @for (franchise of franchises(); track franchise.id) {
-                <option [value]="franchise.id">{{ franchise.name }}</option>
+              @for (entreprise of entreprises(); track entreprise.id) {
+                <option [value]="entreprise.id">{{ entreprise.name }}</option>
               }
             </select>
           </label>
@@ -89,12 +89,12 @@
 
         @if (editingId()) {
           <label class="full coord-label">{{ 'staff.services' | translate }}</label>
-          @if (servicesForCurrentFranchise.length === 0) {
-            <p class="muted">{{ 'staff.noServicesForFranchise' | translate }}</p>
+          @if (servicesForCurrentEntreprise.length === 0) {
+            <p class="muted">{{ 'staff.noServicesForEntreprise' | translate }}</p>
           } @else {
             <div class="permission-groups">
               <div class="permission-group">
-                @for (service of servicesForCurrentFranchise; track service.id) {
+                @for (service of servicesForCurrentEntreprise; track service.id) {
                   <label class="permission-item">
                     <input
                       type="checkbox"

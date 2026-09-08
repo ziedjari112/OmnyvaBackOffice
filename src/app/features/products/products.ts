@@ -1,17 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
-import { FranchiseService } from '../../core/services/franchise.service';
+import { EntrepriseService } from '../../core/services/entreprise.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { ProductDto, ProductUpsertDto } from '../../core/models/product.model';
-import { FranchiseDto } from '../../core/models/franchise.model';
+import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 const EMPTY_FORM: ProductUpsertDto = {
   name: '',
   description: null,
   price: 0,
-  franchiseId: 0
+  entrepriseId: 0
 };
 
 @Component({
@@ -23,11 +23,11 @@ const EMPTY_FORM: ProductUpsertDto = {
 })
 export class Products {
   private readonly productService = inject(ProductService);
-  private readonly franchiseService = inject(FranchiseService);
+  private readonly entrepriseService = inject(EntrepriseService);
   private readonly i18n = inject(I18nService);
 
   readonly products = signal<ProductDto[]>([]);
-  readonly franchises = signal<FranchiseDto[]>([]);
+  readonly entreprises = signal<EntrepriseDto[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
   readonly pageNumber = signal(1);
@@ -43,7 +43,7 @@ export class Products {
 
   constructor() {
     this.load();
-    this.franchiseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.franchises.set(result.items));
+    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
   }
 
   load(): void {
@@ -60,8 +60,8 @@ export class Products {
       });
   }
 
-  franchiseName(franchiseId: number): string {
-    return this.franchises().find((f) => f.id === franchiseId)?.name ?? '';
+  entrepriseName(entrepriseId: number): string {
+    return this.entreprises().find((f) => f.id === entrepriseId)?.name ?? '';
   }
 
   onSearchChange(value: string): void {
@@ -79,7 +79,7 @@ export class Products {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.set({ ...EMPTY_FORM, franchiseId: this.franchises()[0]?.id ?? 0 });
+    this.form.set({ ...EMPTY_FORM, entrepriseId: this.entreprises()[0]?.id ?? 0 });
     this.error.set(null);
     this.showForm.set(true);
   }
@@ -90,7 +90,7 @@ export class Products {
       name: product.name,
       description: product.description,
       price: product.price,
-      franchiseId: product.franchiseId
+      entrepriseId: product.entrepriseId
     });
     this.error.set(null);
     this.showForm.set(true);

@@ -4,7 +4,7 @@ export interface ServiceDto {
   description?: string | null;
   price: number;
   durationMinutes: number;
-  franchiseId: number;
+  entrepriseId: number;
   isActive: boolean;
 }
 
@@ -13,5 +13,5 @@ export interface ServiceUpsertDto {
   description?: string | null;
   price: number;
   durationMinutes: number;
-  franchiseId: number;
+  entrepriseId: number;
 }

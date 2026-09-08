@@ -4,10 +4,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TenantService } from '../../../core/services/tenant.service';
 import { I18nService } from '../../../core/services/i18n.service';
 import { MenuService } from '../../../core/services/menu.service';
-import { FranchiseService } from '../../../core/services/franchise.service';
+import { EntrepriseService } from '../../../core/services/entreprise.service';
 import { Locale } from '../../../core/i18n/translations';
 import { MenuDto } from '../../../core/models/menu.model';
-import { FranchiseDto } from '../../../core/models/franchise.model';
+import { EntrepriseDto } from '../../../core/models/entreprise.model';
 import { FilterType } from '../../../core/models/pagination.model';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
@@ -23,13 +23,13 @@ export class Header {
   protected readonly tenant = inject(TenantService);
   protected readonly i18n = inject(I18nService);
   private readonly menuService = inject(MenuService);
-  private readonly franchiseService = inject(FranchiseService);
+  private readonly entrepriseService = inject(EntrepriseService);
 
   protected readonly locales: Locale[] = ['en', 'fr', 'ar'];
   protected readonly menuItems = signal<MenuDto[]>([]);
-  protected readonly availableFranchises = signal<FranchiseDto[]>([]);
+  protected readonly availableEntreprises = signal<EntrepriseDto[]>([]);
 
-  protected readonly franchiseSelectValue = computed(() => this.tenant.currentFranchiseId()?.toString() ?? '');
+  protected readonly entrepriseSelectValue = computed(() => this.tenant.currentEntrepriseId()?.toString() ?? '');
 
   constructor() {
     effect(() => {
@@ -39,18 +39,18 @@ export class Header {
     });
 
     effect(() => {
-      const ids = this.tenant.availableFranchiseIds();
+      const ids = this.tenant.availableEntrepriseIds();
       if (ids.length === 0) {
-        this.availableFranchises.set([]);
+        this.availableEntreprises.set([]);
         return;
       }
-      this.franchiseService
+      this.entrepriseService
         .getPaged({
           pageNumber: 1,
           pageSize: ids.length,
           filters: [{ propertyName: 'Id', values: ids.map(String), type: FilterType.Equals }]
         })
-        .subscribe((result) => this.availableFranchises.set(result.items));
+        .subscribe((result) => this.availableEntreprises.set(result.items));
     });
   }
 
@@ -58,8 +58,8 @@ export class Header {
     this.i18n.setLocale(locale);
   }
 
-  onFranchiseChange(value: string): void {
-    this.tenant.setFranchise(value ? Number(value) : null);
+  onEntrepriseChange(value: string): void {
+    this.tenant.setEntreprise(value ? Number(value) : null);
     location.reload();
   }
 }

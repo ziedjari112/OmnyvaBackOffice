@@ -9,7 +9,7 @@ export enum ReservationStatus {
 export interface ReservationDto {
   id: number;
   name: string;
-  franchiseId: number;
+  entrepriseId: number;
   productId: number;
   productName?: string | null;
   staffId: number;
@@ -26,7 +26,7 @@ export interface ReservationDto {
 }
 
 export interface ReservationUpsertDto {
-  franchiseId: number;
+  entrepriseId: number;
   productId: number;
   staffId: number;
   customerName: string;

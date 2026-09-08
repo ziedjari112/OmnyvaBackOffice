@@ -1,7 +1,7 @@
 export type BusinessType = 'Retail' | 'ServiceBased';
 export type BusinessGender = 'Male' | 'Female' | 'Unisex';
 
-export interface FranchiseDto {
+export interface EntrepriseDto {
   id: number;
   name: string;
   description?: string | null;
@@ -21,7 +21,7 @@ export interface FranchiseDto {
   isActive: boolean;
 }
 
-export interface FranchiseUpsertDto {
+export interface EntrepriseUpsertDto {
   name: string;
   description?: string | null;
   address?: string | null;

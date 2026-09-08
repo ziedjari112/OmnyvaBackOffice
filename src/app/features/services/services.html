@@ -20,7 +20,7 @@
     <table>
       <tr>
         <th>{{ 'services.name' | translate }}</th>
-        <th>{{ 'staff.franchise' | translate }}</th>
+        <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'services.price' | translate }}</th>
         <th>{{ 'services.duration' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
@@ -29,7 +29,7 @@
       @for (service of services(); track service.id) {
         <tr>
           <td>{{ service.name }}</td>
-          <td>{{ franchiseName(service.franchiseId) }}</td>
+          <td>{{ entrepriseName(service.entrepriseId) }}</td>
           <td>{{ service.price }}</td>
           <td>{{ service.durationMinutes }} {{ 'services.minutes' | translate }}</td>
           <td>
@@ -67,15 +67,15 @@
             <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
           </label>
           <label class="full">
-            {{ 'staff.franchise' | translate }}
+            {{ 'staff.entreprise' | translate }}
             <select
-              name="franchiseId"
-              [ngModel]="form().franchiseId"
-              (ngModelChange)="form.update((f) => ({ ...f, franchiseId: +$event }))"
+              name="entrepriseId"
+              [ngModel]="form().entrepriseId"
+              (ngModelChange)="form.update((f) => ({ ...f, entrepriseId: +$event }))"
               required
             >
-              @for (franchise of franchises(); track franchise.id) {
-                <option [value]="franchise.id">{{ franchise.name }}</option>
+              @for (entreprise of entreprises(); track entreprise.id) {
+                <option [value]="entreprise.id">{{ entreprise.name }}</option>
               }
             </select>
           </label>

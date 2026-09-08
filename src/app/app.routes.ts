@@ -10,9 +10,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard)
   },
   {
-    path: 'franchises',
+    path: 'entreprises',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/franchises/franchises').then((m) => m.Franchises)
+    loadComponent: () => import('./features/entreprises/entreprises').then((m) => m.Entreprises)
   },
   {
     path: 'staff',
