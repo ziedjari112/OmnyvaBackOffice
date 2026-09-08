@@ -1,0 +1,23 @@
+<div class="auth-container">
+  <form class="card auth-card" (ngSubmit)="submit()">
+    <h1>{{ 'auth.login.title' | translate }}</h1>
+
+    <label>
+      {{ 'auth.field.email' | translate }}
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+    </label>
+
+    <label>
+      {{ 'auth.field.password' | translate }}
+      <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+    </label>
+
+    @if (error()) {
+      <p class="error">{{ error()! | translate }}</p>
+    }
+
+    <button class="btn primary" type="submit" [disabled]="loading()">
+      {{ 'auth.login.submit' | translate }}
+    </button>
+  </form>
+</div>

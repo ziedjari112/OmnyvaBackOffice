@@ -1,0 +1,50 @@
+<div class="navbar">
+  <a class="brand" routerLink="/">{{ 'app.name' | translate }}</a>
+
+  <div class="navlinks">
+    @for (item of menuItems(); track item.id) {
+      @if (item.route) {
+        <a [routerLink]="item.route" routerLinkActive="active">{{ item.name }}</a>
+      } @else if (item.children.length > 0) {
+        <div class="dropdown">
+          <span>{{ item.name }}</span>
+          <div class="dropdown-menu">
+            @for (child of item.children; track child.id) {
+              <a [routerLink]="child.route" routerLinkActive="active">{{ child.name }}</a>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="right">
+    @if (availableFranchises().length > 0) {
+      <select
+        class="franchise-select"
+        [value]="franchiseSelectValue()"
+        (change)="onFranchiseChange($any($event.target).value)"
+      >
+        <option value="">{{ 'nav.franchise.all' | translate }}</option>
+        @for (franchise of availableFranchises(); track franchise.id) {
+          <option [value]="franchise.id">{{ franchise.name }}</option>
+        }
+      </select>
+    }
+
+    <div class="lang-switch">
+      @for (locale of locales; track locale) {
+        <button
+          type="button"
+          class="lang-btn"
+          [class.active]="i18n.locale() === locale"
+          (click)="setLocale(locale)"
+        >
+          {{ locale.toUpperCase() }}
+        </button>
+      }
+    </div>
+
+    <button class="btn" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
+  </div>
+</div>

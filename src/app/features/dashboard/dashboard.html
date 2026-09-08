@@ -1,0 +1,4 @@
+<div class="page-container">
+  <h1>{{ auth.currentUser()?.name }}</h1>
+  <p class="muted">{{ auth.currentUser()?.roles?.join(', ') }}</p>
+</div>

@@ -1,0 +1,131 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'franchises.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'franchises.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (franchises().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'franchises.name' | translate }}</th>
+        <th>{{ 'franchises.company' | translate }}</th>
+        <th>{{ 'franchises.city' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (franchise of franchises(); track franchise.id) {
+        <tr>
+          <td>{{ franchise.name }}</td>
+          <td>{{ companyName(franchise.companyId) }}</td>
+          <td>{{ franchise.city }}</td>
+          <td>
+            <span class="badge" [class.success]="franchise.isActive" [class.neutral]="!franchise.isActive">
+              {{ (franchise.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(franchise)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(franchise)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'franchises.editTitle' : 'franchises.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'franchises.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'franchises.company' | translate }}
+            <select
+              name="companyId"
+              [ngModel]="form().companyId"
+              (ngModelChange)="form.update((f) => ({ ...f, companyId: +$event }))"
+              required
+            >
+              @for (company of companies(); track company.id) {
+                <option [value]="company.id">{{ company.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'franchises.city' | translate }}
+            <input type="text" name="city" [ngModel]="form().city" (ngModelChange)="form.update((f) => ({ ...f, city: $event }))" />
+          </label>
+          <label>
+            {{ 'auth.field.phone' | translate }}
+            <input type="tel" name="phone" [ngModel]="form().phone" (ngModelChange)="form.update((f) => ({ ...f, phone: $event }))" />
+          </label>
+          <label class="full">
+            {{ 'franchises.address' | translate }}
+            <input type="text" name="address" [ngModel]="form().address" (ngModelChange)="form.update((f) => ({ ...f, address: $event }))" />
+          </label>
+          <label>
+            {{ 'auth.field.email' | translate }}
+            <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
+          </label>
+
+          <label class="full coord-label">{{ 'franchises.coordinates' | translate }}</label>
+          <label>
+            {{ 'franchises.latitude' | translate }}
+            <input
+              type="number"
+              step="any"
+              name="latitude"
+              [ngModel]="form().latitude"
+              (ngModelChange)="form.update((f) => ({ ...f, latitude: $event === '' ? null : +$event }))"
+            />
+          </label>
+          <label>
+            {{ 'franchises.longitude' | translate }}
+            <input
+              type="number"
+              step="any"
+              name="longitude"
+              [ngModel]="form().longitude"
+              (ngModelChange)="form.update((f) => ({ ...f, longitude: $event === '' ? null : +$event }))"
+            />
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

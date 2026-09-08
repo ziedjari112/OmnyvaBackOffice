@@ -1,0 +1,123 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'companies.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'companies.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (companies().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'companies.name' | translate }}</th>
+        <th>{{ 'companies.matriculeFiscal' | translate }}</th>
+        <th>{{ 'companies.city' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (company of companies(); track company.id) {
+        <tr>
+          <td>{{ company.name }}</td>
+          <td>{{ company.matriculeFiscal }}</td>
+          <td>{{ company.city }}</td>
+          <td>
+            <span class="badge" [class.success]="company.isActive" [class.neutral]="!company.isActive">
+              {{ (company.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(company)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(company)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'companies.editTitle' : 'companies.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'companies.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'companies.matriculeFiscal' | translate }}
+            <input
+              type="text"
+              name="matriculeFiscal"
+              [ngModel]="form().matriculeFiscal"
+              (ngModelChange)="form.update((f) => ({ ...f, matriculeFiscal: $event }))"
+              required
+            />
+          </label>
+          <label>
+            {{ 'companies.email' | translate }}
+            <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
+          </label>
+          <label>
+            {{ 'companies.phone' | translate }}
+            <input type="tel" name="phone" [ngModel]="form().phone" (ngModelChange)="form.update((f) => ({ ...f, phone: $event }))" />
+          </label>
+          <label>
+            {{ 'companies.city' | translate }}
+            <input type="text" name="city" [ngModel]="form().city" (ngModelChange)="form.update((f) => ({ ...f, city: $event }))" />
+          </label>
+          <label>
+            {{ 'companies.legalForm' | translate }}
+            <input type="text" name="legalForm" [ngModel]="form().legalForm" (ngModelChange)="form.update((f) => ({ ...f, legalForm: $event }))" />
+          </label>
+          <label class="full">
+            {{ 'companies.address' | translate }}
+            <input type="text" name="address" [ngModel]="form().address" (ngModelChange)="form.update((f) => ({ ...f, address: $event }))" />
+          </label>
+          <label>
+            {{ 'companies.registerCommerceNumber' | translate }}
+            <input
+              type="text"
+              name="registerCommerceNumber"
+              [ngModel]="form().registerCommerceNumber"
+              (ngModelChange)="form.update((f) => ({ ...f, registerCommerceNumber: $event }))"
+            />
+          </label>
+          <label>
+            {{ 'companies.website' | translate }}
+            <input type="url" name="website" [ngModel]="form().website" (ngModelChange)="form.update((f) => ({ ...f, website: $event }))" />
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
