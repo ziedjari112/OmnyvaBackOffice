@@ -1,4 +1,35 @@
 <div class="page-container">
-  <h1>{{ auth.currentUser()?.name }}</h1>
-  <p class="muted">{{ auth.currentUser()?.roles?.join(', ') }}</p>
+  <div class="topbar">
+    <div>
+      <div class="page-title">{{ 'dashboard.welcome' | translate }}</div>
+      <div class="page-sub">{{ auth.currentUser()?.name }}</div>
+    </div>
+    <div class="avatar">{{ initials() }}</div>
+  </div>
+
+  @if (counts(); as c) {
+    <div class="grid4">
+      <div class="metric">
+        <div class="label">{{ 'dashboard.entreprises' | translate }}</div>
+        <div class="value">{{ c.entreprises }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">{{ 'dashboard.staff' | translate }}</div>
+        <div class="value">{{ c.staff }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">{{ 'dashboard.products' | translate }}</div>
+        <div class="value">{{ c.products }}</div>
+      </div>
+      <div class="metric">
+        <div class="label">{{ 'dashboard.services' | translate }}</div>
+        <div class="value">{{ c.services }}</div>
+      </div>
+    </div>
+  }
+
+  <div class="card">
+    <div class="section-title">{{ auth.currentUser()?.name }}</div>
+    <div class="section-sub">{{ auth.currentUser()?.roles?.join(', ') }}</div>
+  </div>
 </div>

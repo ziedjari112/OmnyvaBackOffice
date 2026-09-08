@@ -1,23 +1,40 @@
-<div class="auth-container">
-  <form class="card auth-card" (ngSubmit)="submit()">
-    <h1>{{ 'auth.login.title' | translate }}</h1>
+<div class="login-shell">
+  <div class="login-visual">
+    <div class="brand">
+      <div class="logo">Ov</div>
+      <div class="name">{{ 'app.name' | translate }}</div>
+    </div>
+    <div>
+      <div class="pitch">{{ 'auth.login.pitch' | translate }}</div>
+      <div class="pitch-sub">{{ 'auth.login.pitchSub' | translate }}</div>
+    </div>
+    <div class="foot-note">{{ 'auth.login.footNote' | translate }}</div>
+  </div>
 
-    <label>
-      {{ 'auth.field.email' | translate }}
-      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
-    </label>
+  <div class="login-form-side">
+    <form class="login-box" (ngSubmit)="submit()">
+      <h1>{{ 'auth.login.title' | translate }}</h1>
+      <div class="lead">{{ 'auth.login.lead' | translate }}</div>
 
-    <label>
-      {{ 'auth.field.password' | translate }}
-      <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
-    </label>
+      <div class="field">
+        <label>{{ 'auth.field.email' | translate }}</label>
+        <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+      </div>
 
-    @if (error()) {
-      <p class="error">{{ error()! | translate }}</p>
-    }
+      <div class="field">
+        <label>{{ 'auth.field.password' | translate }}</label>
+        <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+      </div>
 
-    <button class="btn primary" type="submit" [disabled]="loading()">
-      {{ 'auth.login.submit' | translate }}
-    </button>
-  </form>
+      @if (error()) {
+        <p class="error">{{ error()! | translate }}</p>
+      }
+
+      <button class="btn primary btn-block" type="submit" [disabled]="loading()">
+        {{ 'auth.login.submit' | translate }}
+      </button>
+
+      <div class="switch-link">{{ 'auth.login.staffOnly' | translate }}</div>
+    </form>
+  </div>
 </div>

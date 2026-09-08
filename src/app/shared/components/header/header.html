@@ -1,24 +1,27 @@
-<div class="navbar">
-  <a class="brand" routerLink="/">{{ 'app.name' | translate }}</a>
+<aside class="sidebar">
+  <a class="sb-brand" routerLink="/">
+    <div class="logo">Ov</div>
+    <div class="name">{{ 'app.name' | translate }}</div>
+  </a>
 
-  <div class="navlinks">
+  <nav class="sb-nav">
     @for (item of menuItems(); track item.id) {
-      @if (item.route) {
-        <a [routerLink]="item.route" routerLinkActive="active">{{ item.name }}</a>
-      } @else if (item.children.length > 0) {
-        <div class="dropdown">
-          <span>{{ item.name }}</span>
-          <div class="dropdown-menu">
-            @for (child of item.children; track child.id) {
-              <a [routerLink]="child.route" routerLinkActive="active">{{ child.name }}</a>
-            }
-          </div>
-        </div>
+      @if (item.children.length > 0) {
+        <div class="sb-group-label">{{ item.name }}</div>
+        @for (child of item.children; track child.id) {
+          <a [routerLink]="child.route" routerLinkActive="active" class="sb-item">
+            <span class="dot"></span>{{ child.name }}
+          </a>
+        }
+      } @else if (item.route) {
+        <a [routerLink]="item.route" routerLinkActive="active" class="sb-item">
+          <span class="dot"></span>{{ item.name }}
+        </a>
       }
     }
-  </div>
+  </nav>
 
-  <div class="right">
+  <div class="sb-footer">
     @if (availableEntreprises().length > 0) {
       <select
         class="entreprise-select"
@@ -45,6 +48,6 @@
       }
     </div>
 
-    <button class="btn" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
+    <button class="btn sb-logout" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
   </div>
-</div>
+</aside>
