@@ -26,9 +26,11 @@ export class AuthService {
     private readonly router: Router
   ) {}
 
+  // Whether this account is allowed into the back office (i.e. not a customer-only account) is
+  // verified server-side by this dedicated endpoint, not by inspecting result.user.roles here.
   login(dto: LoginDto): Observable<AuthResultDto> {
     return this.http
-      .post<AuthResultDto>(`${environment.apiUrl}/auth/login`, dto)
+      .post<AuthResultDto>(`${environment.apiUrl}/auth/backoffice-login`, dto)
       .pipe(tap((result) => this.setSession(result)));
   }
 

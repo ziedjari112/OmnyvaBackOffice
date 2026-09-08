@@ -1,0 +1,137 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'users.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'users.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (users().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'users.name' | translate }}</th>
+        <th>{{ 'auth.field.email' | translate }}</th>
+        <th>{{ 'users.roles' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (user of users(); track user.id) {
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.roles.join(', ') }}</td>
+          <td>
+            <span class="badge" [class.success]="user.isActive" [class.neutral]="!user.isActive">
+              {{ (user.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(user)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(user)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingUser() ? 'users.editTitle' : 'users.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'users.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'auth.field.email' | translate }}
+            <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" required />
+          </label>
+          @if (!editingUser()) {
+            <label class="full">
+              {{ 'auth.field.password' | translate }}
+              <input
+                type="password"
+                name="password"
+                [ngModel]="form().password"
+                (ngModelChange)="form.update((f) => ({ ...f, password: $event }))"
+                required
+              />
+            </label>
+          }
+          <label class="full">
+            {{ 'auth.field.phone' | translate }}
+            <input
+              type="tel"
+              name="phoneNumber"
+              [ngModel]="form().phoneNumber"
+              (ngModelChange)="form.update((f) => ({ ...f, phoneNumber: $event }))"
+            />
+          </label>
+        </div>
+
+        @if (editingUser(); as user) {
+          <label class="full coord-label">{{ 'users.roles' | translate }}</label>
+          <div class="role-list">
+            @for (assignment of user.roleAssignments; track assignment.id) {
+              <div class="role-row">
+                <span>{{ roleName(assignment.roleId) }}</span>
+                <span class="muted">{{ assignment.franchiseId ? franchiseName(assignment.franchiseId) : ('users.global' | translate) }}</span>
+                <button type="button" class="btn danger" (click)="removeRole(assignment.id)">{{ 'common.delete' | translate }}</button>
+              </div>
+            }
+            @if (user.roleAssignments.length === 0) {
+              <p class="muted">{{ 'users.noRoles' | translate }}</p>
+            }
+          </div>
+
+          <div class="role-add">
+            <select [ngModel]="newRoleId()" (ngModelChange)="newRoleId.set($event ? +$event : null)" name="newRoleId">
+              <option [ngValue]="null">{{ 'users.pickRole' | translate }}</option>
+              @for (role of roles(); track role.id) {
+                <option [value]="role.id">{{ role.name }}</option>
+              }
+            </select>
+            <select [ngModel]="newRoleFranchiseId()" (ngModelChange)="newRoleFranchiseId.set($event ? +$event : null)" name="newRoleFranchiseId">
+              <option [ngValue]="null">{{ 'users.global' | translate }}</option>
+              @for (franchise of franchises(); track franchise.id) {
+                <option [value]="franchise.id">{{ franchise.name }}</option>
+              }
+            </select>
+            <button type="button" class="btn" [disabled]="!newRoleId()" (click)="addRole()">{{ 'users.addRole' | translate }}</button>
+          </div>
+        }
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

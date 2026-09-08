@@ -22,7 +22,6 @@ export interface UserDto {
   name: string;
   email: string;
   phoneNumber?: string | null;
-  companyId?: number | null;
   isActive: boolean;
   roles: string[];
   roleAssignments: UserRoleAssignmentDto[];
@@ -42,14 +41,12 @@ export interface CreateUserDto {
   email: string;
   password: string;
   phoneNumber?: string | null;
-  companyId?: number | null;
 }
 
 export interface UpdateUserDto {
   name: string;
   email: string;
   phoneNumber?: string | null;
-  companyId?: number | null;
 }
 
 export interface AssignUserRoleDto {

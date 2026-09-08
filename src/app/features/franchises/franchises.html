@@ -20,7 +20,7 @@
     <table>
       <tr>
         <th>{{ 'franchises.name' | translate }}</th>
-        <th>{{ 'franchises.company' | translate }}</th>
+        <th>{{ 'franchises.businessType' | translate }}</th>
         <th>{{ 'franchises.city' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
@@ -28,7 +28,7 @@
       @for (franchise of franchises(); track franchise.id) {
         <tr>
           <td>{{ franchise.name }}</td>
-          <td>{{ companyName(franchise.companyId) }}</td>
+          <td>{{ ('franchises.businessType.' + franchise.businessType) | translate }}</td>
           <td>{{ franchise.city }}</td>
           <td>
             <span class="badge" [class.success]="franchise.isActive" [class.neutral]="!franchise.isActive">
@@ -64,19 +64,37 @@
             {{ 'franchises.name' | translate }}
             <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
           </label>
-          <label class="full">
-            {{ 'franchises.company' | translate }}
+
+          <label>
+            {{ 'franchises.businessType' | translate }}
             <select
-              name="companyId"
-              [ngModel]="form().companyId"
-              (ngModelChange)="form.update((f) => ({ ...f, companyId: +$event }))"
+              name="businessType"
+              [ngModel]="form().businessType"
+              (ngModelChange)="onBusinessTypeChange($event)"
               required
             >
-              @for (company of companies(); track company.id) {
-                <option [value]="company.id">{{ company.name }}</option>
+              @for (type of businessTypes; track type) {
+                <option [value]="type">{{ ('franchises.businessType.' + type) | translate }}</option>
               }
             </select>
           </label>
+
+          @if (form().businessType === 'ServiceBased') {
+            <label>
+              {{ 'franchises.gender' | translate }}
+              <select
+                name="gender"
+                [ngModel]="form().gender"
+                (ngModelChange)="form.update((f) => ({ ...f, gender: $event }))"
+                required
+              >
+                @for (g of genders; track g) {
+                  <option [value]="g">{{ ('franchises.gender.' + g) | translate }}</option>
+                }
+              </select>
+            </label>
+          }
+
           <label>
             {{ 'franchises.city' | translate }}
             <input type="text" name="city" [ngModel]="form().city" (ngModelChange)="form.update((f) => ({ ...f, city: $event }))" />
@@ -94,25 +112,57 @@
             <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
           </label>
 
+          <label class="full coord-label">{{ 'franchises.fiscal' | translate }}</label>
+          <label>
+            {{ 'franchises.matriculeFiscal' | translate }}
+            <input
+              type="text"
+              name="matriculeFiscal"
+              [ngModel]="form().matriculeFiscal"
+              (ngModelChange)="form.update((f) => ({ ...f, matriculeFiscal: $event }))"
+              required
+            />
+          </label>
+          <label>
+            {{ 'franchises.registerCommerceNumber' | translate }}
+            <input
+              type="text"
+              name="registerCommerceNumber"
+              [ngModel]="form().registerCommerceNumber"
+              (ngModelChange)="form.update((f) => ({ ...f, registerCommerceNumber: $event }))"
+            />
+          </label>
+          <label>
+            {{ 'franchises.legalForm' | translate }}
+            <input
+              type="text"
+              name="legalForm"
+              [ngModel]="form().legalForm"
+              (ngModelChange)="form.update((f) => ({ ...f, legalForm: $event }))"
+            />
+          </label>
+          <label>
+            {{ 'franchises.website' | translate }}
+            <input type="text" name="website" [ngModel]="form().website" (ngModelChange)="form.update((f) => ({ ...f, website: $event }))" />
+          </label>
+
           <label class="full coord-label">{{ 'franchises.coordinates' | translate }}</label>
           <label>
             {{ 'franchises.latitude' | translate }}
             <input
-              type="number"
-              step="any"
+              type="text"
               name="latitude"
               [ngModel]="form().latitude"
-              (ngModelChange)="form.update((f) => ({ ...f, latitude: $event === '' ? null : +$event }))"
+              (ngModelChange)="form.update((f) => ({ ...f, latitude: $event || null }))"
             />
           </label>
           <label>
             {{ 'franchises.longitude' | translate }}
             <input
-              type="number"
-              step="any"
+              type="text"
               name="longitude"
               [ngModel]="form().longitude"
-              (ngModelChange)="form.update((f) => ({ ...f, longitude: $event === '' ? null : +$event }))"
+              (ngModelChange)="form.update((f) => ({ ...f, longitude: $event || null }))"
             />
           </label>
         </div>

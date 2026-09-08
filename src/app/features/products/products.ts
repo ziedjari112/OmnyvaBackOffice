@@ -1,36 +1,33 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CompanyService } from '../../core/services/company.service';
-import { CompanyDto, CompanyUpsertDto } from '../../core/models/company.model';
+import { ProductService } from '../../core/services/product.service';
+import { FranchiseService } from '../../core/services/franchise.service';
 import { I18nService } from '../../core/services/i18n.service';
+import { ProductDto, ProductUpsertDto } from '../../core/models/product.model';
+import { FranchiseDto } from '../../core/models/franchise.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
-const EMPTY_FORM: CompanyUpsertDto = {
+const EMPTY_FORM: ProductUpsertDto = {
   name: '',
-  matriculeFiscal: '',
   description: null,
-  email: null,
-  phone: null,
-  address: null,
-  city: null,
-  registerCommerceNumber: null,
-  legalForm: null,
-  website: null,
-  logoUrl: null
+  price: 0,
+  franchiseId: 0
 };
 
 @Component({
-  selector: 'app-companies',
+  selector: 'app-products',
   standalone: true,
   imports: [FormsModule, TranslatePipe],
-  templateUrl: './companies.html',
+  templateUrl: './products.html',
   styleUrl: '../../shared/styles/crud-page.scss'
 })
-export class Companies {
-  private readonly companyService = inject(CompanyService);
+export class Products {
+  private readonly productService = inject(ProductService);
+  private readonly franchiseService = inject(FranchiseService);
   private readonly i18n = inject(I18nService);
 
-  readonly companies = signal<CompanyDto[]>([]);
+  readonly products = signal<ProductDto[]>([]);
+  readonly franchises = signal<FranchiseDto[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
   readonly pageNumber = signal(1);
@@ -38,7 +35,7 @@ export class Companies {
 
   readonly showForm = signal(false);
   readonly editingId = signal<number | null>(null);
-  readonly form = signal<CompanyUpsertDto>({ ...EMPTY_FORM });
+  readonly form = signal<ProductUpsertDto>({ ...EMPTY_FORM });
   readonly saving = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -46,20 +43,25 @@ export class Companies {
 
   constructor() {
     this.load();
+    this.franchiseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.franchises.set(result.items));
   }
 
   load(): void {
     this.loading.set(true);
-    this.companyService
+    this.productService
       .getPaged({ pageNumber: this.pageNumber(), pageSize: 20, searchTerm: this.searchTerm() || undefined })
       .subscribe({
         next: (result) => {
-          this.companies.set(result.items);
+          this.products.set(result.items);
           this.totalPages.set(result.totalPages || 1);
           this.loading.set(false);
         },
         error: () => this.loading.set(false)
       });
+  }
+
+  franchiseName(franchiseId: number): string {
+    return this.franchises().find((f) => f.id === franchiseId)?.name ?? '';
   }
 
   onSearchChange(value: string): void {
@@ -77,25 +79,18 @@ export class Companies {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.set({ ...EMPTY_FORM });
+    this.form.set({ ...EMPTY_FORM, franchiseId: this.franchises()[0]?.id ?? 0 });
     this.error.set(null);
     this.showForm.set(true);
   }
 
-  openEdit(company: CompanyDto): void {
-    this.editingId.set(company.id);
+  openEdit(product: ProductDto): void {
+    this.editingId.set(product.id);
     this.form.set({
-      name: company.name,
-      description: company.description,
-      email: company.email,
-      phone: company.phone,
-      address: company.address,
-      city: company.city,
-      matriculeFiscal: company.matriculeFiscal,
-      registerCommerceNumber: company.registerCommerceNumber,
-      legalForm: company.legalForm,
-      website: company.website,
-      logoUrl: company.logoUrl
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      franchiseId: product.franchiseId
     });
     this.error.set(null);
     this.showForm.set(true);
@@ -110,7 +105,7 @@ export class Companies {
     this.error.set(null);
 
     const id = this.editingId();
-    const request = id ? this.companyService.update(id, this.form()) : this.companyService.create(this.form());
+    const request = id ? this.productService.update(id, this.form()) : this.productService.create(this.form());
 
     request.subscribe({
       next: () => {
@@ -125,8 +120,8 @@ export class Companies {
     });
   }
 
-  remove(company: CompanyDto): void {
-    if (!confirm(`${this.i18n.t('common.confirmDelete')} (${company.name})`)) return;
-    this.companyService.delete(company.id).subscribe(() => this.load());
+  remove(product: ProductDto): void {
+    if (!confirm(`${this.i18n.t('common.confirmDelete')} (${product.name})`)) return;
+    this.productService.delete(product.id).subscribe(() => this.load());
   }
 }

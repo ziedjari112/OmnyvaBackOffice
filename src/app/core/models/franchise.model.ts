@@ -1,3 +1,6 @@
+export type BusinessType = 'Retail' | 'ServiceBased';
+export type BusinessGender = 'Male' | 'Female' | 'Unisex';
+
 export interface FranchiseDto {
   id: number;
   name: string;
@@ -6,9 +9,15 @@ export interface FranchiseDto {
   city?: string | null;
   phone?: string | null;
   email?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  companyId: number;
+  latitude?: string | null;
+  longitude?: string | null;
+  businessType: BusinessType;
+  gender?: BusinessGender | null;
+  matriculeFiscal: string;
+  registerCommerceNumber?: string | null;
+  legalForm?: string | null;
+  website?: string | null;
+  logoUrl?: string | null;
   isActive: boolean;
 }
 
@@ -19,7 +28,13 @@ export interface FranchiseUpsertDto {
   city?: string | null;
   phone?: string | null;
   email?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  companyId: number;
+  latitude?: string | null;
+  longitude?: string | null;
+  businessType: BusinessType;
+  gender?: BusinessGender | null;
+  matriculeFiscal: string;
+  registerCommerceNumber?: string | null;
+  legalForm?: string | null;
+  website?: string | null;
+  logoUrl?: string | null;
 }

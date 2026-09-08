@@ -1,0 +1,170 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'staff.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'staff.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (staff().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'staff.name' | translate }}</th>
+        <th>{{ 'staff.franchise' | translate }}</th>
+        <th>{{ 'staff.phone' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (member of staff(); track member.id) {
+        <tr>
+          <td>{{ member.name }}</td>
+          <td>{{ franchiseName(member.franchiseId) }}</td>
+          <td>{{ member.phone }}</td>
+          <td>
+            <span class="badge" [class.success]="member.isActive" [class.neutral]="!member.isActive">
+              {{ (member.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(member)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(member)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'staff.editTitle' : 'staff.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'staff.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'staff.franchise' | translate }}
+            <select
+              name="franchiseId"
+              [ngModel]="form().franchiseId"
+              (ngModelChange)="form.update((f) => ({ ...f, franchiseId: +$event }))"
+              required
+            >
+              @for (franchise of franchises(); track franchise.id) {
+                <option [value]="franchise.id">{{ franchise.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'staff.phone' | translate }}
+            <input type="tel" name="phone" [ngModel]="form().phone" (ngModelChange)="form.update((f) => ({ ...f, phone: $event }))" />
+          </label>
+          <label>
+            {{ 'auth.field.email' | translate }}
+            <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
+          </label>
+        </div>
+
+        @if (editingId()) {
+          <label class="full coord-label">{{ 'staff.services' | translate }}</label>
+          @if (servicesForCurrentFranchise.length === 0) {
+            <p class="muted">{{ 'staff.noServicesForFranchise' | translate }}</p>
+          } @else {
+            <div class="permission-groups">
+              <div class="permission-group">
+                @for (service of servicesForCurrentFranchise; track service.id) {
+                  <label class="permission-item">
+                    <input
+                      type="checkbox"
+                      [checked]="isServiceAssigned(service.id)"
+                      [disabled]="savingServices()"
+                      (change)="toggleService(service.id, $any($event.target).checked)"
+                    />
+                    {{ service.name }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        }
+
+        @if (editingId()) {
+          <label class="full coord-label">{{ 'staff.workingHours' | translate }}</label>
+          <table class="hours-table">
+            <tr>
+              <th>{{ 'staff.day' | translate }}</th>
+              <th>{{ 'staff.dayOff' | translate }}</th>
+              <th>{{ 'staff.startTime' | translate }}</th>
+              <th>{{ 'staff.endTime' | translate }}</th>
+            </tr>
+            @for (day of workingHours(); track day.dayOfWeek) {
+              <tr>
+                <td>{{ ('staff.dayOfWeek.' + day.dayOfWeek) | translate }}</td>
+                <td>
+                  <input type="checkbox" [checked]="day.isDayOff" (change)="toggleDayOff(day.dayOfWeek, $any($event.target).checked)" />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    [disabled]="day.isDayOff"
+                    [ngModel]="timeInputValue(day, 'startTime')"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="updateDayTime(day.dayOfWeek, 'startTime', $event)"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="time"
+                    [disabled]="day.isDayOff"
+                    [ngModel]="timeInputValue(day, 'endTime')"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="updateDayTime(day.dayOfWeek, 'endTime', $event)"
+                  />
+                </td>
+              </tr>
+            }
+          </table>
+          <div class="hours-actions">
+            <button type="button" class="btn" [disabled]="savingHours()" (click)="saveWorkingHours()">
+              {{ 'staff.saveHours' | translate }}
+            </button>
+            @if (hoursSaved()) {
+              <span class="muted">{{ 'staff.hoursSaved' | translate }}</span>
+            }
+          </div>
+        }
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

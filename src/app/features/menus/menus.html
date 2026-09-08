@@ -1,0 +1,99 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'menus.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'menus.new' | translate }}</button>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (flat.length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'menus.name' | translate }}</th>
+        <th>{{ 'menus.route' | translate }}</th>
+        <th>{{ 'menus.requiredPermission' | translate }}</th>
+        <th>{{ 'menus.order' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (menu of flat; track menu.id) {
+        <tr>
+          <td [style.paddingLeft.px]="16 + menu.depth * 20">{{ menu.name }}</td>
+          <td>{{ menu.route }}</td>
+          <td>{{ menu.requiredPermissionCode }}</td>
+          <td>{{ menu.displayOrder }}</td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(menu)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(menu)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'menus.editTitle' : 'menus.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'menus.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'menus.parent' | translate }}
+            <select
+              name="parentMenuId"
+              [ngModel]="form().parentMenuId"
+              (ngModelChange)="form.update((f) => ({ ...f, parentMenuId: $event ? +$event : null }))"
+            >
+              <option [ngValue]="null">{{ 'menus.noParent' | translate }}</option>
+              @for (menu of flat; track menu.id) {
+                @if (menu.id !== editingId()) {
+                  <option [value]="menu.id">{{ menu.name }}</option>
+                }
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'menus.route' | translate }}
+            <input type="text" name="route" [ngModel]="form().route" (ngModelChange)="form.update((f) => ({ ...f, route: $event }))" />
+          </label>
+          <label>
+            {{ 'menus.icon' | translate }}
+            <input type="text" name="icon" [ngModel]="form().icon" (ngModelChange)="form.update((f) => ({ ...f, icon: $event }))" />
+          </label>
+          <label>
+            {{ 'menus.requiredPermission' | translate }}
+            <input
+              type="text"
+              name="requiredPermissionCode"
+              [ngModel]="form().requiredPermissionCode"
+              (ngModelChange)="form.update((f) => ({ ...f, requiredPermissionCode: $event }))"
+            />
+          </label>
+          <label>
+            {{ 'menus.order' | translate }}
+            <input
+              type="number"
+              name="displayOrder"
+              [ngModel]="form().displayOrder"
+              (ngModelChange)="form.update((f) => ({ ...f, displayOrder: +$event }))"
+            />
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

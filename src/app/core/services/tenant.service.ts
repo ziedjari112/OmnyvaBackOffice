@@ -6,7 +6,7 @@ const STORAGE_KEY = 'omnyva.backoffice.franchiseId';
 /**
  * Tracks which franchise the user is currently "acting as" — sent as the X-Franchise-Id header on
  * every request. Permissions from franchise-scoped roles (see UserDto.roleAssignments) only apply
- * when this matches; company-wide roles (FranchiseId = null on the assignment) apply regardless.
+ * when this matches; global roles (FranchiseId = null on the assignment) apply regardless.
  */
 @Injectable({ providedIn: 'root' })
 export class TenantService {
@@ -20,7 +20,7 @@ export class TenantService {
     return Array.from(new Set(ids));
   });
 
-  /** True if the user has at least one company-wide (non franchise-scoped) role. */
+  /** True if the user has at least one global (non franchise-scoped) role. */
   readonly hasGlobalRole = computed(() => {
     const user = this.authService.currentUser();
     return user ? user.roleAssignments.some((ra) => ra.franchiseId == null) : false;

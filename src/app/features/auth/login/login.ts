@@ -1,8 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+
+// Matches Omnyva.Core.Services.AuthService.LoginBackOfficeAsync's rejection message exactly.
+const NOT_AUTHORIZED_MESSAGE = 'This account does not have access to the back office.';
 
 @Component({
   selector: 'app-login',
@@ -26,9 +30,10 @@ export class Login {
 
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: () => this.router.navigate(['/dashboard']),
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.loading.set(false);
-        this.error.set('auth.error.generic');
+        const message = (err.error as { error?: string } | null)?.error;
+        this.error.set(message === NOT_AUTHORIZED_MESSAGE ? 'auth.error.notAuthorized' : 'auth.error.generic');
       }
     });
   }

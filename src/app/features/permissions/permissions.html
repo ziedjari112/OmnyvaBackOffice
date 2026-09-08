@@ -1,0 +1,27 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'permissions.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (permissions().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    @for (group of byModule; track group.module) {
+      <h2 class="module-title">{{ group.module }}</h2>
+      <table>
+        <tr>
+          <th>{{ 'permissions.code' | translate }}</th>
+          <th>{{ 'permissions.description' | translate }}</th>
+        </tr>
+        @for (permission of group.items; track permission.id) {
+          <tr>
+            <td>{{ permission.code }}</td>
+            <td>{{ permission.description }}</td>
+          </tr>
+        }
+      </table>
+    }
+  }
+</div>

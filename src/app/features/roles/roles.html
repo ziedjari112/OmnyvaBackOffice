@@ -1,0 +1,111 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'roles.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'roles.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (roles().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'roles.name' | translate }}</th>
+        <th>{{ 'roles.permissionsCount' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (role of roles(); track role.id) {
+        <tr>
+          <td>
+            {{ role.name }}
+            @if (role.isSystemRole) {
+              <span class="badge neutral">{{ 'roles.system' | translate }}</span>
+            }
+          </td>
+          <td>{{ role.permissions.length }}</td>
+          <td>
+            <span class="badge" [class.success]="role.isActive" [class.neutral]="!role.isActive">
+              {{ (role.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(role)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(role)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'roles.editTitle' : 'roles.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'roles.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'roles.description' | translate }}
+            <input
+              type="text"
+              name="description"
+              [ngModel]="form().description"
+              (ngModelChange)="form.update((f) => ({ ...f, description: $event }))"
+            />
+          </label>
+        </div>
+
+        <label class="full coord-label">{{ 'roles.permissions' | translate }}</label>
+        <div class="permission-groups">
+          @for (group of permissionsByModule; track group.module) {
+            <div class="permission-group">
+              <div class="permission-group-title">{{ group.module }}</div>
+              @for (permission of group.items; track permission.id) {
+                <label class="permission-item">
+                  <input
+                    type="checkbox"
+                    [checked]="isChecked(permission.code)"
+                    (change)="togglePermission(permission.code, $any($event.target).checked)"
+                  />
+                  {{ permission.code }}
+                </label>
+              }
+            </div>
+          }
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

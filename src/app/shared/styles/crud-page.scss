@@ -98,3 +98,98 @@ h1 {
   color: var(--text-danger);
   margin-bottom: 12px;
 }
+
+.hours-table {
+  width: 100%;
+  margin-bottom: 10px;
+
+  th {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 4px 6px;
+  }
+
+  td {
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+
+  input[type='time'] {
+    width: 100%;
+  }
+}
+
+.hours-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.role-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+
+  span:first-child {
+    font-weight: 500;
+    min-width: 120px;
+  }
+}
+
+.role-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  select {
+    flex: 1;
+  }
+}
+
+.module-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin: 20px 0 8px;
+
+  &:first-of-type {
+    margin-top: 8px;
+  }
+}
+
+.permission-groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding: 4px;
+}
+
+.permission-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 4px;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}

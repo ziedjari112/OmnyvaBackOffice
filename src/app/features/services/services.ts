@@ -1,42 +1,33 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ServiceService } from '../../core/services/service.service';
 import { FranchiseService } from '../../core/services/franchise.service';
 import { I18nService } from '../../core/services/i18n.service';
-import { BusinessGender, BusinessType, FranchiseDto, FranchiseUpsertDto } from '../../core/models/franchise.model';
+import { ServiceDto, ServiceUpsertDto } from '../../core/models/service.model';
+import { FranchiseDto } from '../../core/models/franchise.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
-const EMPTY_FORM: FranchiseUpsertDto = {
+const EMPTY_FORM: ServiceUpsertDto = {
   name: '',
   description: null,
-  address: null,
-  city: null,
-  phone: null,
-  email: null,
-  latitude: null,
-  longitude: null,
-  businessType: 'ServiceBased',
-  gender: null,
-  matriculeFiscal: '',
-  registerCommerceNumber: null,
-  legalForm: null,
-  website: null,
-  logoUrl: null
+  price: 0,
+  durationMinutes: 30,
+  franchiseId: 0
 };
 
 @Component({
-  selector: 'app-franchises',
+  selector: 'app-services',
   standalone: true,
   imports: [FormsModule, TranslatePipe],
-  templateUrl: './franchises.html',
+  templateUrl: './services.html',
   styleUrl: '../../shared/styles/crud-page.scss'
 })
-export class Franchises {
+export class Services {
+  private readonly serviceService = inject(ServiceService);
   private readonly franchiseService = inject(FranchiseService);
   private readonly i18n = inject(I18nService);
 
-  readonly businessTypes: BusinessType[] = ['ServiceBased', 'Retail'];
-  readonly genders: BusinessGender[] = ['Female', 'Male', 'Unisex'];
-
+  readonly services = signal<ServiceDto[]>([]);
   readonly franchises = signal<FranchiseDto[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
@@ -45,7 +36,7 @@ export class Franchises {
 
   readonly showForm = signal(false);
   readonly editingId = signal<number | null>(null);
-  readonly form = signal<FranchiseUpsertDto>({ ...EMPTY_FORM });
+  readonly form = signal<ServiceUpsertDto>({ ...EMPTY_FORM });
   readonly saving = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -53,20 +44,25 @@ export class Franchises {
 
   constructor() {
     this.load();
+    this.franchiseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.franchises.set(result.items));
   }
 
   load(): void {
     this.loading.set(true);
-    this.franchiseService
+    this.serviceService
       .getPaged({ pageNumber: this.pageNumber(), pageSize: 20, searchTerm: this.searchTerm() || undefined })
       .subscribe({
         next: (result) => {
-          this.franchises.set(result.items);
+          this.services.set(result.items);
           this.totalPages.set(result.totalPages || 1);
           this.loading.set(false);
         },
         error: () => this.loading.set(false)
       });
+  }
+
+  franchiseName(franchiseId: number): string {
+    return this.franchises().find((f) => f.id === franchiseId)?.name ?? '';
   }
 
   onSearchChange(value: string): void {
@@ -84,29 +80,19 @@ export class Franchises {
 
   openCreate(): void {
     this.editingId.set(null);
-    this.form.set({ ...EMPTY_FORM });
+    this.form.set({ ...EMPTY_FORM, franchiseId: this.franchises()[0]?.id ?? 0 });
     this.error.set(null);
     this.showForm.set(true);
   }
 
-  openEdit(franchise: FranchiseDto): void {
-    this.editingId.set(franchise.id);
+  openEdit(service: ServiceDto): void {
+    this.editingId.set(service.id);
     this.form.set({
-      name: franchise.name,
-      description: franchise.description,
-      address: franchise.address,
-      city: franchise.city,
-      phone: franchise.phone,
-      email: franchise.email,
-      latitude: franchise.latitude,
-      longitude: franchise.longitude,
-      businessType: franchise.businessType,
-      gender: franchise.gender,
-      matriculeFiscal: franchise.matriculeFiscal,
-      registerCommerceNumber: franchise.registerCommerceNumber,
-      legalForm: franchise.legalForm,
-      website: franchise.website,
-      logoUrl: franchise.logoUrl
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      durationMinutes: service.durationMinutes,
+      franchiseId: service.franchiseId
     });
     this.error.set(null);
     this.showForm.set(true);
@@ -116,16 +102,12 @@ export class Franchises {
     this.showForm.set(false);
   }
 
-  onBusinessTypeChange(value: BusinessType): void {
-    this.form.update((f) => ({ ...f, businessType: value, gender: value === 'ServiceBased' ? (f.gender ?? 'Unisex') : null }));
-  }
-
   submit(): void {
     this.saving.set(true);
     this.error.set(null);
 
     const id = this.editingId();
-    const request = id ? this.franchiseService.update(id, this.form()) : this.franchiseService.create(this.form());
+    const request = id ? this.serviceService.update(id, this.form()) : this.serviceService.create(this.form());
 
     request.subscribe({
       next: () => {
@@ -140,8 +122,8 @@ export class Franchises {
     });
   }
 
-  remove(franchise: FranchiseDto): void {
-    if (!confirm(`${this.i18n.t('common.confirmDelete')} (${franchise.name})`)) return;
-    this.franchiseService.delete(franchise.id).subscribe(() => this.load());
+  remove(service: ServiceDto): void {
+    if (!confirm(`${this.i18n.t('common.confirmDelete')} (${service.name})`)) return;
+    this.serviceService.delete(service.id).subscribe(() => this.load());
   }
 }

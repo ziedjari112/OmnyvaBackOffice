@@ -1,0 +1,120 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'products.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'products.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (products().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'products.name' | translate }}</th>
+        <th>{{ 'staff.franchise' | translate }}</th>
+        <th>{{ 'products.price' | translate }}</th>
+        <th>{{ 'products.stock' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (product of products(); track product.id) {
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ franchiseName(product.franchiseId) }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.stockQuantity }}</td>
+          <td>
+            <span class="badge" [class.success]="product.isActive" [class.neutral]="!product.isActive">
+              {{ (product.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(product)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(product)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'products.editTitle' : 'products.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'products.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'staff.franchise' | translate }}
+            <select
+              name="franchiseId"
+              [ngModel]="form().franchiseId"
+              (ngModelChange)="form.update((f) => ({ ...f, franchiseId: +$event }))"
+              required
+            >
+              @for (franchise of franchises(); track franchise.id) {
+                <option [value]="franchise.id">{{ franchise.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'products.price' | translate }}
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              name="price"
+              [ngModel]="form().price"
+              (ngModelChange)="form.update((f) => ({ ...f, price: +$event }))"
+              required
+            />
+          </label>
+          <label class="full">
+            {{ 'products.description' | translate }}
+            <input
+              type="text"
+              name="description"
+              [ngModel]="form().description"
+              (ngModelChange)="form.update((f) => ({ ...f, description: $event }))"
+            />
+          </label>
+        </div>
+
+        @if (editingId()) {
+          <p class="muted">{{ 'products.stockHint' | translate }}</p>
+        }
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
