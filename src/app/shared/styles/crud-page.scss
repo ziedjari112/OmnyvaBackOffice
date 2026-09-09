@@ -105,22 +105,19 @@ h1 {
 .hours-table {
   width: 100%;
   margin-bottom: 10px;
+  box-shadow: none;
 
+  td,
   th {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-align: left;
-    padding: 4px 6px;
-  }
-
-  td {
-    padding: 3px 6px;
-    font-size: 12px;
+    padding: 8px 10px;
   }
 
   input[type='time'] {
-    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 8px;
+    font-size: 12.5px;
+    width: auto;
   }
 }
 
@@ -171,28 +168,17 @@ h1 {
   }
 }
 
-.permission-groups {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  max-height: 260px;
+.permission-scroll {
+  max-height: 280px;
   overflow-y: auto;
   margin-bottom: 16px;
   padding: 4px;
 }
 
-.permission-group-title {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-  margin-bottom: 4px;
-}
+.module-heading {
+  margin-bottom: 10px;
 
-.permission-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 2px;
+  &:not(:first-child) {
+    margin-top: 14px;
+  }
 }

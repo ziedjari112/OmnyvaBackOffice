@@ -37,4 +37,8 @@ export interface EntrepriseUpsertDto {
   legalForm?: string | null;
   website?: string | null;
   logoUrl?: string | null;
+
+  /** Required on create only: the login account auto-created for this entreprise's admin. Ignored on update. */
+  adminName?: string | null;
+  adminEmail?: string | null;
 }

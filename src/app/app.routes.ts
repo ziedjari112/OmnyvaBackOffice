@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-  { path: 'login', loadComponent: () => import('./features/auth/login/login').then((m) => m.Login) },
+  {
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login)
+  },
   {
     path: 'dashboard',
     canActivate: [authGuard],
@@ -48,6 +53,16 @@ export const routes: Routes = [
     path: 'menus',
     canActivate: [authGuard],
     loadComponent: () => import('./features/menus/menus').then((m) => m.Menus)
+  },
+  {
+    path: 'my-reservations',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/my-reservations/my-reservations').then((m) => m.MyReservations)
+  },
+  {
+    path: 'account',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/account/account').then((m) => m.Account)
   },
   { path: '**', redirectTo: 'dashboard' }
 ];

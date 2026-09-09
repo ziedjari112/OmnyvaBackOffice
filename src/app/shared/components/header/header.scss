@@ -1,6 +1,14 @@
 /* Structural sidebar classes (.sidebar, .sb-brand, .sb-item, .sb-group-label, .dot, .sb-footer)
    are defined globally in styles.scss. Only the dark-sidebar-specific overrides live here. */
 
+/* Without this, <app-header> (the actual flex child of .shell) gets stretched to full page height by
+   flexbox, but its .sidebar child inside doesn't inherit that stretch — so the dark background only
+   covers the nav items' own height, leaving page background visible below on any taller page. Making
+   the host `display: contents` removes it from the box tree so .sidebar itself becomes the flex item. */
+:host {
+  display: contents;
+}
+
 .entreprise-select {
   background: var(--sidebar-hover);
   border: 1px solid rgba(255, 255, 255, 0.1);

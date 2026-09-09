@@ -49,6 +49,11 @@ export interface UpdateUserDto {
   phoneNumber?: string | null;
 }
 
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AssignUserRoleDto {
   roleId: number;
   entrepriseId?: number | null;

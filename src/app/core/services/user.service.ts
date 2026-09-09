@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AssignUserRoleDto, CreateUserDto, UpdateUserDto, UserDto } from '../models/auth.model';
+import { AssignUserRoleDto, ChangePasswordDto, CreateUserDto, UpdateUserDto, UserDto } from '../models/auth.model';
 import { BasePaginatedList, BasePaginatedQuery } from '../models/pagination.model';
 
 @Injectable({ providedIn: 'root' })
@@ -33,5 +33,17 @@ export class UserService {
 
   removeRole(id: number, userRoleId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}/roles/${userRoleId}`);
+  }
+
+  getMe(): Observable<UserDto> {
+    return this.http.get<UserDto>(`${this.baseUrl}/me`);
+  }
+
+  updateMe(dto: UpdateUserDto): Observable<UserDto> {
+    return this.http.put<UserDto>(`${this.baseUrl}/me`, dto);
+  }
+
+  changeMyPassword(dto: ChangePasswordDto): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/me/change-password`, dto);
   }
 }

@@ -48,6 +48,10 @@
       }
     </div>
 
+    <a routerLink="/account" routerLinkActive="active" class="sb-item">
+      <span class="dot"></span>{{ 'account.title' | translate }}
+    </a>
+
     <button class="btn sb-logout" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
   </div>
 </aside>

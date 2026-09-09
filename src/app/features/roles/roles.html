@@ -79,12 +79,12 @@
         </div>
 
         <label class="full coord-label">{{ 'roles.permissions' | translate }}</label>
-        <div class="permission-groups">
+        <div class="permission-scroll">
           @for (group of permissionsByModule; track group.module) {
-            <div class="permission-group">
-              <div class="permission-group-title">{{ group.module }}</div>
+            <div class="section-sub module-heading">{{ group.module }}</div>
+            <div class="checkgrid">
               @for (permission of group.items; track permission.id) {
-                <label class="permission-item">
+                <label>
                   <input
                     type="checkbox"
                     [checked]="isChecked(permission.code)"

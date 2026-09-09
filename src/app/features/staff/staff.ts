@@ -1,19 +1,24 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { StaffService } from '../../core/services/staff.service';
-import { EntrepriseService } from '../../core/services/entreprise.service';
-import { ServiceService } from '../../core/services/service.service';
-import { I18nService } from '../../core/services/i18n.service';
-import { SetStaffWorkingHoursDto, StaffDto, StaffUpsertDto, StaffWorkingHoursDto } from '../../core/models/staff.model';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { ServiceDto } from '../../core/models/service.model';
-import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import {
+  SetStaffWorkingHoursDto,
+  StaffDto,
+  StaffUpsertDto,
+  StaffWorkingHoursDto,
+} from '../../core/models/staff.model';
+import { EntrepriseService } from '../../core/services/entreprise.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { ServiceService } from '../../core/services/service.service';
+import { StaffService } from '../../core/services/staff.service';
 
 const EMPTY_FORM: StaffUpsertDto = {
   name: '',
   phone: null,
   email: null,
-  entrepriseId: 0
+  entrepriseId: 0,
 };
 
 const DAYS_OF_WEEK: StaffWorkingHoursDto['dayOfWeek'][] = [
@@ -23,7 +28,7 @@ const DAYS_OF_WEEK: StaffWorkingHoursDto['dayOfWeek'][] = [
   'Thursday',
   'Friday',
   'Saturday',
-  'Sunday'
+  'Sunday',
 ];
 
 function defaultWorkingHours(): StaffWorkingHoursDto[] {
@@ -31,7 +36,7 @@ function defaultWorkingHours(): StaffWorkingHoursDto[] {
     dayOfWeek,
     isDayOff: dayOfWeek === 'Sunday',
     startTime: '09:00',
-    endTime: '18:00'
+    endTime: '18:00',
   }));
 }
 
@@ -49,7 +54,7 @@ function toApiTimeValue(time: string): string | null {
   standalone: true,
   imports: [FormsModule, TranslatePipe],
   templateUrl: './staff.html',
-  styleUrl: '../../shared/styles/crud-page.scss'
+  styleUrl: '../../shared/styles/crud-page.scss',
 })
 export class Staff {
   private readonly staffService = inject(StaffService);
@@ -82,8 +87,12 @@ export class Staff {
 
   constructor() {
     this.load();
-    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
-    this.serviceService.getPaged({ pageNumber: 1, pageSize: 500 }).subscribe((result) => this.services.set(result.items));
+    this.entrepriseService
+      .getPaged({ pageNumber: 1, pageSize: 200 })
+      .subscribe((result) => this.entreprises.set(result.items));
+    this.serviceService
+      .getPaged({ pageNumber: 1, pageSize: 500 })
+      .subscribe((result) => this.services.set(result.items));
   }
 
   get servicesForCurrentEntreprise(): ServiceDto[] {
@@ -108,7 +117,7 @@ export class Staff {
         this.assignedServiceIds.set(new Set(ids));
         this.savingServices.set(false);
       },
-      error: () => this.savingServices.set(false)
+      error: () => this.savingServices.set(false),
     });
   }
 
@@ -117,12 +126,20 @@ export class Staff {
   }
 
   toggleDayOff(dayOfWeek: StaffWorkingHoursDto['dayOfWeek'], isDayOff: boolean): void {
-    this.workingHours.update((days) => days.map((d) => (d.dayOfWeek === dayOfWeek ? { ...d, isDayOff } : d)));
+    this.workingHours.update((days) =>
+      days.map((d) => (d.dayOfWeek === dayOfWeek ? { ...d, isDayOff } : d)),
+    );
     this.hoursSaved.set(false);
   }
 
-  updateDayTime(dayOfWeek: StaffWorkingHoursDto['dayOfWeek'], field: 'startTime' | 'endTime', value: string): void {
-    this.workingHours.update((days) => days.map((d) => (d.dayOfWeek === dayOfWeek ? { ...d, [field]: value } : d)));
+  updateDayTime(
+    dayOfWeek: StaffWorkingHoursDto['dayOfWeek'],
+    field: 'startTime' | 'endTime',
+    value: string,
+  ): void {
+    this.workingHours.update((days) =>
+      days.map((d) => (d.dayOfWeek === dayOfWeek ? { ...d, [field]: value } : d)),
+    );
     this.hoursSaved.set(false);
   }
 
@@ -134,8 +151,8 @@ export class Staff {
       days: this.workingHours().map((d) => ({
         ...d,
         startTime: d.isDayOff ? null : toApiTimeValue(toTimeInputValue(d.startTime)),
-        endTime: d.isDayOff ? null : toApiTimeValue(toTimeInputValue(d.endTime))
-      }))
+        endTime: d.isDayOff ? null : toApiTimeValue(toTimeInputValue(d.endTime)),
+      })),
     };
 
     this.savingHours.set(true);
@@ -145,28 +162,34 @@ export class Staff {
         this.savingHours.set(false);
         this.hoursSaved.set(true);
       },
-      error: () => this.savingHours.set(false)
+      error: () => this.savingHours.set(false),
     });
   }
 
   private loadWorkingHours(staffId: number): void {
     this.staffService.getWorkingHours(staffId).subscribe((days) => {
       const byDay = new Map(days.map((d) => [d.dayOfWeek, d]));
-      this.workingHours.set(defaultWorkingHours().map((fallback) => byDay.get(fallback.dayOfWeek) ?? fallback));
+      this.workingHours.set(
+        defaultWorkingHours().map((fallback) => byDay.get(fallback.dayOfWeek) ?? fallback),
+      );
     });
   }
 
   load(): void {
     this.loading.set(true);
     this.staffService
-      .getPaged({ pageNumber: this.pageNumber(), pageSize: 20, searchTerm: this.searchTerm() || undefined })
+      .getPaged({
+        pageNumber: this.pageNumber(),
+        pageSize: 20,
+        searchTerm: this.searchTerm() || undefined,
+      })
       .subscribe({
         next: (result) => {
           this.staff.set(result.items);
           this.totalPages.set(result.totalPages || 1);
           this.loading.set(false);
         },
-        error: () => this.loading.set(false)
+        error: () => this.loading.set(false),
       });
   }
 
@@ -202,10 +225,12 @@ export class Staff {
       name: member.name,
       phone: member.phone,
       email: member.email,
-      entrepriseId: member.entrepriseId
+      entrepriseId: member.entrepriseId,
     });
     this.assignedServiceIds.set(new Set());
-    this.staffService.getServices(member.id).subscribe((ids) => this.assignedServiceIds.set(new Set(ids)));
+    this.staffService
+      .getServices(member.id)
+      .subscribe((ids) => this.assignedServiceIds.set(new Set(ids)));
     this.hoursSaved.set(false);
     this.loadWorkingHours(member.id);
     this.error.set(null);
@@ -221,7 +246,9 @@ export class Staff {
     this.error.set(null);
 
     const id = this.editingId();
-    const request = id ? this.staffService.update(id, this.form()) : this.staffService.create(this.form());
+    const request = id
+      ? this.staffService.update(id, this.form())
+      : this.staffService.create(this.form());
 
     request.subscribe({
       next: () => {
@@ -232,7 +259,7 @@ export class Staff {
       error: () => {
         this.saving.set(false);
         this.error.set('common.error.generic');
-      }
+      },
     });
   }
 

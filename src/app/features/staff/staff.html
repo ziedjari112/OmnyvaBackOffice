@@ -92,20 +92,18 @@
           @if (servicesForCurrentEntreprise.length === 0) {
             <p class="muted">{{ 'staff.noServicesForEntreprise' | translate }}</p>
           } @else {
-            <div class="permission-groups">
-              <div class="permission-group">
-                @for (service of servicesForCurrentEntreprise; track service.id) {
-                  <label class="permission-item">
-                    <input
-                      type="checkbox"
-                      [checked]="isServiceAssigned(service.id)"
-                      [disabled]="savingServices()"
-                      (change)="toggleService(service.id, $any($event.target).checked)"
-                    />
-                    {{ service.name }}
-                  </label>
-                }
-              </div>
+            <div class="checkgrid">
+              @for (service of servicesForCurrentEntreprise; track service.id) {
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="isServiceAssigned(service.id)"
+                    [disabled]="savingServices()"
+                    (change)="toggleService(service.id, $any($event.target).checked)"
+                  />
+                  {{ service.name }}
+                </label>
+              }
             </div>
           }
         }

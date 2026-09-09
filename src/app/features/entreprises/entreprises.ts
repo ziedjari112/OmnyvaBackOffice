@@ -1,11 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EntrepriseService } from '../../core/services/entreprise.service';
-import { UserService } from '../../core/services/user.service';
-import { RoleService } from '../../core/services/role.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { BusinessGender, BusinessType, EntrepriseDto, EntrepriseUpsertDto } from '../../core/models/entreprise.model';
-import { UserDto } from '../../core/models/auth.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 const EMPTY_FORM: EntrepriseUpsertDto = {
@@ -23,7 +20,9 @@ const EMPTY_FORM: EntrepriseUpsertDto = {
   registerCommerceNumber: null,
   legalForm: null,
   website: null,
-  logoUrl: null
+  logoUrl: null,
+  adminName: '',
+  adminEmail: ''
 };
 
 @Component({
@@ -35,8 +34,6 @@ const EMPTY_FORM: EntrepriseUpsertDto = {
 })
 export class Entreprises {
   private readonly entrepriseService = inject(EntrepriseService);
-  private readonly userService = inject(UserService);
-  private readonly roleService = inject(RoleService);
   private readonly i18n = inject(I18nService);
 
   readonly businessTypes: BusinessType[] = ['ServiceBased', 'Retail'];
@@ -54,19 +51,10 @@ export class Entreprises {
   readonly saving = signal(false);
   readonly error = signal<string | null>(null);
 
-  // Only relevant when creating: designates who gets the ResponsableEntreprise role for the new entreprise.
-  readonly users = signal<UserDto[]>([]);
-  readonly responsableUserId = signal<number | null>(null);
-  private responsableRoleId: number | null = null;
-
   private searchDebounce?: ReturnType<typeof setTimeout>;
 
   constructor() {
     this.load();
-    this.userService.getPaged({ pageNumber: 1, pageSize: 500 }).subscribe((result) => this.users.set(result.items));
-    this.roleService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => {
-      this.responsableRoleId = result.items.find((r) => r.name === 'ResponsableEntreprise')?.id ?? null;
-    });
   }
 
   load(): void {
@@ -99,7 +87,6 @@ export class Entreprises {
   openCreate(): void {
     this.editingId.set(null);
     this.form.set({ ...EMPTY_FORM });
-    this.responsableUserId.set(null);
     this.error.set(null);
     this.showForm.set(true);
   }
@@ -121,7 +108,9 @@ export class Entreprises {
       registerCommerceNumber: entreprise.registerCommerceNumber,
       legalForm: entreprise.legalForm,
       website: entreprise.website,
-      logoUrl: entreprise.logoUrl
+      logoUrl: entreprise.logoUrl,
+      adminName: '',
+      adminEmail: ''
     });
     this.error.set(null);
     this.showForm.set(true);
@@ -156,13 +145,8 @@ export class Entreprises {
       return;
     }
 
-    const responsableUserId = this.responsableUserId();
-
     this.entrepriseService.create(this.form()).subscribe({
-      next: (created) => {
-        if (responsableUserId && this.responsableRoleId) {
-          this.userService.assignRole(responsableUserId, { roleId: this.responsableRoleId, entrepriseId: created.id }).subscribe();
-        }
+      next: () => {
         this.saving.set(false);
         this.showForm.set(false);
         this.load();

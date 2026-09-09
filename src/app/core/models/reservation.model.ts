@@ -10,8 +10,8 @@ export interface ReservationDto {
   id: number;
   name: string;
   entrepriseId: number;
-  productId: number;
-  productName?: string | null;
+  serviceId: number;
+  serviceName?: string | null;
   staffId: number;
   staffName?: string | null;
   customerName: string;
@@ -27,7 +27,7 @@ export interface ReservationDto {
 
 export interface ReservationUpsertDto {
   entrepriseId: number;
-  productId: number;
+  serviceId: number;
   staffId: number;
   customerName: string;
   customerPhone?: string | null;

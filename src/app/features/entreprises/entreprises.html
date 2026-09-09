@@ -168,20 +168,28 @@
         </div>
 
         @if (!editingId()) {
-          <label class="full coord-label">{{ 'entreprises.responsable' | translate }}</label>
+          <label class="full coord-label">{{ 'entreprises.admin' | translate }}</label>
+          <p class="muted">{{ 'entreprises.adminHint' | translate }}</p>
           <div class="form-grid">
-            <label class="full">
-              {{ 'entreprises.responsableHint' | translate }}
-              <select
-                name="responsableUserId"
-                [ngModel]="responsableUserId()"
-                (ngModelChange)="responsableUserId.set($event ? +$event : null)"
-              >
-                <option [ngValue]="null">{{ 'entreprises.responsableNone' | translate }}</option>
-                @for (user of users(); track user.id) {
-                  <option [value]="user.id">{{ user.name }} ({{ user.email }})</option>
-                }
-              </select>
+            <label>
+              {{ 'entreprises.adminName' | translate }}
+              <input
+                type="text"
+                name="adminName"
+                [ngModel]="form().adminName"
+                (ngModelChange)="form.update((f) => ({ ...f, adminName: $event }))"
+                required
+              />
+            </label>
+            <label>
+              {{ 'entreprises.adminEmail' | translate }}
+              <input
+                type="email"
+                name="adminEmail"
+                [ngModel]="form().adminEmail"
+                (ngModelChange)="form.update((f) => ({ ...f, adminEmail: $event }))"
+                required
+              />
             </label>
           </div>
         }
