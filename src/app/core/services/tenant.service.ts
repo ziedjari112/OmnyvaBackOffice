@@ -32,6 +32,15 @@ export class TenantService {
       if (id === null) localStorage.removeItem(STORAGE_KEY);
       else localStorage.setItem(STORAGE_KEY, String(id));
     });
+
+    // A user scoped to exactly one entreprise (e.g. Staff, ResponsableEntreprise) has no reason to see
+    // or use the "acting as" picker — auto-select it so every request is correctly scoped from the start.
+    effect(() => {
+      const ids = this.availableEntrepriseIds();
+      if (this.currentEntrepriseId() === null && !this.hasGlobalRole() && ids.length === 1) {
+        this.currentEntrepriseId.set(ids[0]);
+      }
+    });
   }
 
   setEntreprise(id: number | null): void {
