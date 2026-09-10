@@ -19,19 +19,29 @@
   } @else {
     <table>
       <tr>
+        <th></th>
         <th>{{ 'products.name' | translate }}</th>
+        <th>{{ 'families.title' | translate }}</th>
         <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'products.price' | translate }}</th>
         <th>{{ 'products.stock' | translate }}</th>
+        <th>{{ 'products.loyaltyPoints' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
       </tr>
       @for (product of products(); track product.id) {
         <tr>
+          <td>
+            @if (product.imageUrl) {
+              <img [src]="uploadService.toAbsoluteUrl(product.imageUrl)" class="thumb" alt="" />
+            }
+          </td>
           <td>{{ product.name }}</td>
+          <td>{{ product.familyName || '—' }}</td>
           <td>{{ entrepriseName(product.entrepriseId) }}</td>
           <td>{{ product.price }}</td>
           <td>{{ product.stockQuantity }}</td>
+          <td>{{ product.loyaltyPoints }}</td>
           <td>
             <span class="badge" [class.success]="product.isActive" [class.neutral]="!product.isActive">
               {{ (product.isActive ? 'common.active' : 'common.inactive') | translate }}
@@ -100,6 +110,38 @@
               (ngModelChange)="form.update((f) => ({ ...f, description: $event }))"
             />
           </label>
+          <label class="full">
+            {{ 'families.title' | translate }}
+            <select
+              name="familyId"
+              [ngModel]="form().familyId"
+              (ngModelChange)="form.update((f) => ({ ...f, familyId: $event ? +$event : null }))"
+            >
+              <option [ngValue]="null">{{ 'products.noFamily' | translate }}</option>
+              @for (family of familiesForCurrentEntreprise; track family.id) {
+                <option [value]="family.id">{{ family.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'products.loyaltyPoints' | translate }}
+            <input
+              type="number"
+              min="0"
+              name="loyaltyPoints"
+              [ngModel]="form().loyaltyPoints"
+              (ngModelChange)="form.update((f) => ({ ...f, loyaltyPoints: +$event }))"
+            />
+          </label>
+          <label class="full">
+            {{ 'products.image' | translate }}
+            <input type="file" accept="image/*" (change)="onImageSelected($event)" [disabled]="uploadingImage()" />
+          </label>
+          @if (uploadingImage()) {
+            <p class="muted full">{{ 'common.loading' | translate }}</p>
+          } @else if (form().imageUrl) {
+            <img [src]="uploadService.toAbsoluteUrl(form().imageUrl)" class="thumb-preview" alt="" />
+          }
         </div>
 
         @if (editingId()) {

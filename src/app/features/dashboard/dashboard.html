@@ -7,24 +7,32 @@
     <div class="avatar">{{ initials() }}</div>
   </div>
 
-  @if (counts(); as c) {
+  @if (entreprisesCount() !== null || staffCount() !== null || productsCount() !== null || servicesCount() !== null) {
     <div class="grid4">
-      <div class="metric">
-        <div class="label">{{ 'dashboard.entreprises' | translate }}</div>
-        <div class="value">{{ c.entreprises }}</div>
-      </div>
-      <div class="metric">
-        <div class="label">{{ 'dashboard.staff' | translate }}</div>
-        <div class="value">{{ c.staff }}</div>
-      </div>
-      <div class="metric">
-        <div class="label">{{ 'dashboard.products' | translate }}</div>
-        <div class="value">{{ c.products }}</div>
-      </div>
-      <div class="metric">
-        <div class="label">{{ 'dashboard.services' | translate }}</div>
-        <div class="value">{{ c.services }}</div>
-      </div>
+      @if (entreprisesCount() !== null) {
+        <div class="metric">
+          <div class="label">{{ 'dashboard.entreprises' | translate }}</div>
+          <div class="value">{{ entreprisesCount() }}</div>
+        </div>
+      }
+      @if (staffCount() !== null) {
+        <div class="metric">
+          <div class="label">{{ 'dashboard.staff' | translate }}</div>
+          <div class="value">{{ staffCount() }}</div>
+        </div>
+      }
+      @if (productsCount() !== null) {
+        <div class="metric">
+          <div class="label">{{ 'dashboard.products' | translate }}</div>
+          <div class="value">{{ productsCount() }}</div>
+        </div>
+      }
+      @if (servicesCount() !== null) {
+        <div class="metric">
+          <div class="label">{{ 'dashboard.services' | translate }}</div>
+          <div class="value">{{ servicesCount() }}</div>
+        </div>
+      }
     </div>
   }
 

@@ -6,6 +6,10 @@ export interface ProductDto {
   stockQuantity: number;
   entrepriseId: number;
   isActive: boolean;
+  familyId?: number | null;
+  familyName?: string | null;
+  imageUrl?: string | null;
+  loyaltyPoints: number;
 }
 
 export interface ProductUpsertDto {
@@ -13,4 +17,7 @@ export interface ProductUpsertDto {
   description?: string | null;
   price: number;
   entrepriseId: number;
+  familyId?: number | null;
+  imageUrl?: string | null;
+  loyaltyPoints: number;
 }

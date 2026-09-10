@@ -12,7 +12,8 @@ const EMPTY_FORM: ServiceUpsertDto = {
   description: null,
   price: 0,
   durationMinutes: 30,
-  entrepriseId: 0
+  entrepriseId: 0,
+  loyaltyPoints: 0
 };
 
 @Component({
@@ -44,7 +45,7 @@ export class Services {
 
   constructor() {
     this.load();
-    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
+    this.entrepriseService.getMine().subscribe((entreprises) => this.entreprises.set(entreprises));
   }
 
   load(): void {
@@ -92,7 +93,8 @@ export class Services {
       description: service.description,
       price: service.price,
       durationMinutes: service.durationMinutes,
-      entrepriseId: service.entrepriseId
+      entrepriseId: service.entrepriseId,
+      loyaltyPoints: service.loyaltyPoints
     });
     this.error.set(null);
     this.showForm.set(true);

@@ -1,0 +1,50 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'notifications.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (notifications().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th></th>
+        <th>{{ 'notifications.titleColumn' | translate }}</th>
+        <th>{{ 'notifications.message' | translate }}</th>
+        <th>{{ 'notifications.date' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (notification of notifications(); track notification.id) {
+        <tr>
+          <td>
+            @if (!notification.isRead) {
+              <span class="badge success">{{ 'notifications.new' | translate }}</span>
+            }
+          </td>
+          <td>{{ notification.title }}</td>
+          <td>{{ notification.message }}</td>
+          <td>{{ notification.createdAt | date: 'short' }}</td>
+          <td class="row-actions">
+            @if (!notification.isRead) {
+              <button class="btn" (click)="markAsRead(notification)">{{ 'notifications.markRead' | translate }}</button>
+            } @else {
+              <button class="btn" (click)="markAsUnread(notification)">{{ 'notifications.markUnread' | translate }}</button>
+            }
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+</div>

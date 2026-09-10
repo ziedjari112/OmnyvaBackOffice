@@ -26,7 +26,7 @@ export class MyReservations {
 
   load(): void {
     this.loading.set(true);
-    this.reservationService.getMine({ pageNumber: this.pageNumber(), pageSize: 20 }).subscribe({
+    this.reservationService.getForStaff({ pageNumber: this.pageNumber(), pageSize: 20 }).subscribe({
       next: (result) => {
         this.reservations.set(result.items);
         this.totalPages.set(result.totalPages || 1);

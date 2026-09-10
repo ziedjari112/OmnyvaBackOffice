@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { EntrepriseService } from '../../core/services/entreprise.service';
 import { StaffService } from '../../core/services/staff.service';
@@ -31,21 +30,30 @@ export class Dashboard {
       .toUpperCase();
   });
 
-  protected readonly counts = signal<{ entreprises: number; staff: number; products: number; services: number } | null>(null);
+  // Independent per-tile signals, not one combined object — a role that lacks permission for one of these
+  // (e.g. Staff has none of Staff.Read/Products.Read/Services.Read) must not blank out the whole dashboard
+  // just because that one request 403s; that tile is simply omitted instead.
+  protected readonly entreprisesCount = signal<number | null>(null);
+  protected readonly staffCount = signal<number | null>(null);
+  protected readonly productsCount = signal<number | null>(null);
+  protected readonly servicesCount = signal<number | null>(null);
 
   constructor() {
-    forkJoin({
-      entreprises: this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 1 }),
-      staff: this.staffService.getPaged({ pageNumber: 1, pageSize: 1 }),
-      products: this.productService.getPaged({ pageNumber: 1, pageSize: 1 }),
-      services: this.serviceService.getPaged({ pageNumber: 1, pageSize: 1 })
-    }).subscribe(({ entreprises, staff, products, services }) => {
-      this.counts.set({
-        entreprises: entreprises.totalCount,
-        staff: staff.totalCount,
-        products: products.totalCount,
-        services: services.totalCount
-      });
+    this.entrepriseService.getMine().subscribe({
+      next: (entreprises) => this.entreprisesCount.set(entreprises.length),
+      error: () => this.entreprisesCount.set(null)
+    });
+    this.staffService.getPaged({ pageNumber: 1, pageSize: 1 }).subscribe({
+      next: (result) => this.staffCount.set(result.totalCount),
+      error: () => this.staffCount.set(null)
+    });
+    this.productService.getPaged({ pageNumber: 1, pageSize: 1 }).subscribe({
+      next: (result) => this.productsCount.set(result.totalCount),
+      error: () => this.productsCount.set(null)
+    });
+    this.serviceService.getPaged({ pageNumber: 1, pageSize: 1 }).subscribe({
+      next: (result) => this.servicesCount.set(result.totalCount),
+      error: () => this.servicesCount.set(null)
     });
   }
 }

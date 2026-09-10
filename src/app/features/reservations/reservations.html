@@ -1,0 +1,44 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'reservations.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (reservations().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'myReservations.service' | translate }}</th>
+        <th>{{ 'reservations.staff' | translate }}</th>
+        <th>{{ 'myReservations.customer' | translate }}</th>
+        <th>{{ 'myReservations.scheduledAt' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+      </tr>
+      @for (reservation of reservations(); track reservation.id) {
+        <tr>
+          <td>{{ reservation.serviceName }}</td>
+          <td>{{ reservation.staffName }}</td>
+          <td>{{ reservation.customerName }}</td>
+          <td>{{ reservation.scheduledAt | date: 'medium' }}</td>
+          <td>
+            <span class="badge" [class.success]="reservation.status === 'Confirmed' || reservation.status === 'Completed'">
+              {{ ('myReservations.status.' + reservation.status) | translate }}
+            </span>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+</div>

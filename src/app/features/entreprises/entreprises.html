@@ -79,7 +79,7 @@
             </select>
           </label>
 
-          @if (form().businessType === 'ServiceBased') {
+          @if (form().businessType === 'ServiceBased' || form().businessType === 'ServiceAndRetail') {
             <label>
               {{ 'entreprises.gender' | translate }}
               <select

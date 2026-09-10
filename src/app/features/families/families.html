@@ -1,0 +1,106 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'families.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'families.new' | translate }}</button>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="onSearchChange($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (families().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th></th>
+        <th>{{ 'families.name' | translate }}</th>
+        <th>{{ 'suppliers.entreprise' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (family of families(); track family.id) {
+        <tr>
+          <td>
+            @if (family.imageUrl) {
+              <img [src]="uploadService.toAbsoluteUrl(family.imageUrl)" class="thumb" alt="" />
+            }
+          </td>
+          <td>{{ family.name }}</td>
+          <td>{{ entrepriseName(family.entrepriseId) }}</td>
+          <td>
+            <span class="badge" [class.success]="family.isActive" [class.neutral]="!family.isActive">
+              {{ (family.isActive ? 'common.active' : 'common.inactive') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(family)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(family)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'families.editTitle' : 'families.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'families.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'suppliers.entreprise' | translate }}
+            <select
+              name="entrepriseId"
+              [ngModel]="form().entrepriseId"
+              (ngModelChange)="form.update((f) => ({ ...f, entrepriseId: +$event }))"
+              required
+            >
+              @for (entreprise of entreprises(); track entreprise.id) {
+                <option [value]="entreprise.id">{{ entreprise.name }}</option>
+              }
+            </select>
+          </label>
+          <label class="full">
+            {{ 'products.image' | translate }}
+            <input type="file" accept="image/*" (change)="onImageSelected($event)" [disabled]="uploadingImage()" />
+          </label>
+          @if (uploadingImage()) {
+            <p class="muted full">{{ 'common.loading' | translate }}</p>
+          } @else if (form().imageUrl) {
+            <img [src]="uploadService.toAbsoluteUrl(form().imageUrl)" class="thumb-preview" alt="" />
+          }
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

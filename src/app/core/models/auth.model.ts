@@ -28,6 +28,8 @@ export interface UserDto {
   permissionOverrides: UserPermissionOverrideDto[];
 }
 
+export type Portal = 'staff' | 'client';
+
 export interface AuthResultDto {
   accessToken: string;
   accessTokenExpiresAt: string;

@@ -1,0 +1,48 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'loyalty.config.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else {
+    <form class="form-grid" style="max-width: 420px" (ngSubmit)="submit()">
+      <label class="full">
+        {{ 'loyalty.config.policy' | translate }}
+        <select
+          name="expirationPolicy"
+          [ngModel]="form().expirationPolicy"
+          (ngModelChange)="form.update((f) => ({ ...f, expirationPolicy: $event }))"
+        >
+          @for (policy of policies; track policy) {
+            <option [value]="policy">{{ ('loyalty.config.policy.' + policy) | translate }}</option>
+          }
+        </select>
+      </label>
+
+      @if (form().expirationPolicy === 'FixedDays') {
+        <label class="full">
+          {{ 'loyalty.config.days' | translate }}
+          <input
+            type="number"
+            min="1"
+            name="expirationDays"
+            [ngModel]="form().expirationDays"
+            (ngModelChange)="form.update((f) => ({ ...f, expirationDays: +$event }))"
+          />
+        </label>
+      }
+
+      @if (saved()) {
+        <p class="full muted">{{ 'common.saved' | translate }}</p>
+      }
+      @if (error()) {
+        <p class="full error">{{ error()! | translate }}</p>
+      }
+
+      <div class="modal-actions full">
+        <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+      </div>
+    </form>
+  }
+</div>

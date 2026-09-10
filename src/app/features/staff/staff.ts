@@ -87,9 +87,7 @@ export class Staff {
 
   constructor() {
     this.load();
-    this.entrepriseService
-      .getPaged({ pageNumber: 1, pageSize: 200 })
-      .subscribe((result) => this.entreprises.set(result.items));
+    this.entrepriseService.getMine().subscribe((entreprises) => this.entreprises.set(entreprises));
     this.serviceService
       .getPaged({ pageNumber: 1, pageSize: 500 })
       .subscribe((result) => this.services.set(result.items));

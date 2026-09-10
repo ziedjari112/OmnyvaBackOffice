@@ -36,7 +36,7 @@ export class Entreprises {
   private readonly entrepriseService = inject(EntrepriseService);
   private readonly i18n = inject(I18nService);
 
-  readonly businessTypes: BusinessType[] = ['ServiceBased', 'Retail'];
+  readonly businessTypes: BusinessType[] = ['ServiceBased', 'Retail', 'ServiceAndRetail'];
   readonly genders: BusinessGender[] = ['Female', 'Male', 'Unisex'];
 
   readonly entreprises = signal<EntrepriseDto[]>([]);
@@ -121,7 +121,8 @@ export class Entreprises {
   }
 
   onBusinessTypeChange(value: BusinessType): void {
-    this.form.update((f) => ({ ...f, businessType: value, gender: value === 'ServiceBased' ? (f.gender ?? 'Unisex') : null }));
+    const needsGender = value === 'ServiceBased' || value === 'ServiceAndRetail';
+    this.form.update((f) => ({ ...f, businessType: value, gender: needsGender ? (f.gender ?? 'Unisex') : null }));
   }
 
   submit(): void {

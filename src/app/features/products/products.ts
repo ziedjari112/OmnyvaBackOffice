@@ -2,16 +2,22 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
 import { EntrepriseService } from '../../core/services/entreprise.service';
+import { FamilyService } from '../../core/services/family.service';
+import { UploadService } from '../../core/services/upload.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { ProductDto, ProductUpsertDto } from '../../core/models/product.model';
 import { EntrepriseDto } from '../../core/models/entreprise.model';
+import { FamilyDto } from '../../core/models/family.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 const EMPTY_FORM: ProductUpsertDto = {
   name: '',
   description: null,
   price: 0,
-  entrepriseId: 0
+  entrepriseId: 0,
+  familyId: null,
+  imageUrl: null,
+  loyaltyPoints: 0
 };
 
 @Component({
@@ -24,11 +30,15 @@ const EMPTY_FORM: ProductUpsertDto = {
 export class Products {
   private readonly productService = inject(ProductService);
   private readonly entrepriseService = inject(EntrepriseService);
+  private readonly familyService = inject(FamilyService);
+  protected readonly uploadService = inject(UploadService);
   private readonly i18n = inject(I18nService);
 
   readonly products = signal<ProductDto[]>([]);
   readonly entreprises = signal<EntrepriseDto[]>([]);
+  readonly families = signal<FamilyDto[]>([]);
   readonly loading = signal(true);
+  readonly uploadingImage = signal(false);
   readonly searchTerm = signal('');
   readonly pageNumber = signal(1);
   readonly totalPages = signal(1);
@@ -43,7 +53,12 @@ export class Products {
 
   constructor() {
     this.load();
-    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
+    this.entrepriseService.getMine().subscribe((entreprises) => this.entreprises.set(entreprises));
+    this.familyService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.families.set(result.items));
+  }
+
+  get familiesForCurrentEntreprise(): FamilyDto[] {
+    return this.families().filter((f) => f.entrepriseId === this.form().entrepriseId);
   }
 
   load(): void {
@@ -90,7 +105,10 @@ export class Products {
       name: product.name,
       description: product.description,
       price: product.price,
-      entrepriseId: product.entrepriseId
+      entrepriseId: product.entrepriseId,
+      familyId: product.familyId ?? null,
+      imageUrl: product.imageUrl ?? null,
+      loyaltyPoints: product.loyaltyPoints
     });
     this.error.set(null);
     this.showForm.set(true);
@@ -98,6 +116,23 @@ export class Products {
 
   closeForm(): void {
     this.showForm.set(false);
+  }
+
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.uploadingImage.set(true);
+    this.uploadService.uploadImage(file, 'products').subscribe({
+      next: (url) => {
+        this.form.update((f) => ({ ...f, imageUrl: url }));
+        this.uploadingImage.set(false);
+      },
+      error: () => {
+        this.uploadingImage.set(false);
+        this.error.set('common.error.generic');
+      }
+    });
   }
 
   submit(): void {

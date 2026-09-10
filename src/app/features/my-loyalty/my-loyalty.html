@@ -1,0 +1,33 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'loyalty.myTitle' | translate }}</h1>
+  </div>
+
+  <div class="qr-card">
+    <p class="muted">{{ 'loyalty.qrHint' | translate }}</p>
+    @if (loadingQr()) {
+      <p class="muted">{{ 'common.loading' | translate }}</p>
+    } @else if (qrUrl()) {
+      <img [src]="qrUrl()" class="qr-image" alt="" />
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (points().length === 0) {
+    <p class="muted">{{ 'loyalty.noPoints' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'staff.entreprise' | translate }}</th>
+        <th>{{ 'loyalty.points' | translate }}</th>
+      </tr>
+      @for (entry of points(); track entry.entrepriseId) {
+        <tr>
+          <td>{{ entry.entrepriseName }}</td>
+          <td>{{ entry.totalPoints }}</td>
+        </tr>
+      }
+    </table>
+  }
+</div>

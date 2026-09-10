@@ -10,6 +10,6 @@ export const guestGuard: CanActivateFn = () => {
 
   if (!authService.isAuthenticated()) return true;
 
-  router.navigate(['/dashboard']);
+  router.navigate([authService.portal() === 'client' ? '/my-loyalty' : '/dashboard']);
   return false;
 };

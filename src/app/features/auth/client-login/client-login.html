@@ -1,0 +1,42 @@
+<div class="login-shell">
+  <div class="login-visual">
+    <div class="brand">
+      <div class="logo">Ov</div>
+      <div class="name">{{ 'app.name' | translate }}</div>
+    </div>
+    <div>
+      <div class="pitch">{{ 'auth.clientLogin.pitch' | translate }}</div>
+      <div class="pitch-sub">{{ 'auth.clientLogin.pitchSub' | translate }}</div>
+    </div>
+    <div class="foot-note">{{ 'auth.login.footNote' | translate }}</div>
+  </div>
+
+  <div class="login-form-side">
+    <form class="login-box" (ngSubmit)="submit()">
+      <h1>{{ 'auth.clientLogin.title' | translate }}</h1>
+      <div class="lead">{{ 'auth.clientLogin.lead' | translate }}</div>
+
+      <div class="field">
+        <label>{{ 'auth.field.email' | translate }}</label>
+        <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label>{{ 'auth.field.password' | translate }}</label>
+        <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+      </div>
+
+      @if (error()) {
+        <p class="error">{{ error()! | translate }}</p>
+      }
+
+      <button class="btn primary btn-block" type="submit" [disabled]="loading()">
+        {{ 'auth.login.submit' | translate }}
+      </button>
+
+      <div class="switch-link">
+        <a routerLink="/login">{{ 'auth.clientLogin.staffLink' | translate }}</a>
+      </div>
+    </form>
+  </div>
+</div>

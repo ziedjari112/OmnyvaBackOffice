@@ -1,0 +1,70 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'orders.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (orders().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'orders.customer' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th>{{ 'orders.total' | translate }}</th>
+        <th>{{ 'orders.date' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (order of orders(); track order.id) {
+        <tr>
+          <td>{{ order.customerName || order.customerEmail || '—' }}</td>
+          <td>
+            <span class="badge" [class.success]="order.status === 'Confirmed'" [class.neutral]="order.status === 'Cancelled'">
+              {{ ('orders.status.' + order.status) | translate }}
+            </span>
+          </td>
+          <td>{{ order.totalAmount | number: '1.2-2' }}</td>
+          <td>{{ order.createdAt | date: 'short' }}</td>
+          <td class="row-actions">
+            <button class="btn" (click)="toggleExpand(order)">
+              {{ (expandedId() === order.id ? 'common.hide' : 'stockMovements.viewLines') | translate }}
+            </button>
+          </td>
+        </tr>
+        @if (expandedId() === order.id) {
+          <tr>
+            <td colspan="5">
+              <table class="hours-table">
+                <tr>
+                  <th>{{ 'orders.line.type' | translate }}</th>
+                  <th>{{ 'orders.line.item' | translate }}</th>
+                  <th>{{ 'stockMovements.quantity' | translate }}</th>
+                  <th>{{ 'orders.total' | translate }}</th>
+                </tr>
+                @for (line of order.lines; track line.id) {
+                  <tr>
+                    <td>{{ ('orders.line.type.' + line.type) | translate }}</td>
+                    <td>{{ line.type === 'Product' ? line.productName : (line.serviceName + ' — ' + line.staffName) }}</td>
+                    <td>{{ line.quantity }}</td>
+                    <td>{{ line.subtotal | number: '1.2-2' }}</td>
+                  </tr>
+                }
+              </table>
+            </td>
+          </tr>
+        }
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+</div>

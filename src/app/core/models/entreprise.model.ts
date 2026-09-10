@@ -1,4 +1,4 @@
-export type BusinessType = 'Retail' | 'ServiceBased';
+export type BusinessType = 'Retail' | 'ServiceBased' | 'ServiceAndRetail';
 export type BusinessGender = 'Male' | 'Female' | 'Unisex';
 
 export interface EntrepriseDto {

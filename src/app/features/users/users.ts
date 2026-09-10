@@ -53,7 +53,7 @@ export class Users {
   constructor() {
     this.load();
     this.roleService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.roles.set(result.items));
-    this.entrepriseService.getPaged({ pageNumber: 1, pageSize: 200 }).subscribe((result) => this.entreprises.set(result.items));
+    this.entrepriseService.getMine().subscribe((entreprises) => this.entreprises.set(entreprises));
   }
 
   load(): void {

@@ -23,6 +23,7 @@
         <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'services.price' | translate }}</th>
         <th>{{ 'services.duration' | translate }}</th>
+        <th>{{ 'services.loyaltyPoints' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
       </tr>
@@ -32,6 +33,7 @@
           <td>{{ entrepriseName(service.entrepriseId) }}</td>
           <td>{{ service.price }}</td>
           <td>{{ service.durationMinutes }} {{ 'services.minutes' | translate }}</td>
+          <td>{{ service.loyaltyPoints }}</td>
           <td>
             <span class="badge" [class.success]="service.isActive" [class.neutral]="!service.isActive">
               {{ (service.isActive ? 'common.active' : 'common.inactive') | translate }}
@@ -100,6 +102,16 @@
               [ngModel]="form().durationMinutes"
               (ngModelChange)="form.update((f) => ({ ...f, durationMinutes: +$event }))"
               required
+            />
+          </label>
+          <label>
+            {{ 'services.loyaltyPoints' | translate }}
+            <input
+              type="number"
+              min="0"
+              name="loyaltyPoints"
+              [ngModel]="form().loyaltyPoints"
+              (ngModelChange)="form.update((f) => ({ ...f, loyaltyPoints: +$event }))"
             />
           </label>
           <label class="full">

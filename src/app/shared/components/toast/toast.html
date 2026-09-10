@@ -1,0 +1,11 @@
+<div class="toast-stack">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast" (click)="open(toast.id)">
+      <div class="toast-content">
+        <strong>{{ toast.title }}</strong>
+        <p>{{ toast.message }}</p>
+      </div>
+      <button type="button" class="toast-close" (click)="dismiss(toast.id, $event)">&times;</button>
+    </div>
+  }
+</div>

@@ -16,6 +16,9 @@
       } @else if (item.route) {
         <a [routerLink]="item.route" routerLinkActive="active" class="sb-item">
           <span class="dot"></span>{{ item.name }}
+          @if (item.route === '/notifications' && unreadNotificationCount() > 0) {
+            <span class="unread-badge">{{ unreadNotificationCount() }}</span>
+          }
         </a>
       }
     }

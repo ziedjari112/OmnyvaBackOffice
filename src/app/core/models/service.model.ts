@@ -6,6 +6,7 @@ export interface ServiceDto {
   durationMinutes: number;
   entrepriseId: number;
   isActive: boolean;
+  loyaltyPoints: number;
 }
 
 export interface ServiceUpsertDto {
@@ -14,4 +15,5 @@ export interface ServiceUpsertDto {
   price: number;
   durationMinutes: number;
   entrepriseId: number;
+  loyaltyPoints: number;
 }

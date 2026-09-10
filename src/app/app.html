@@ -1,10 +1,15 @@
 @if (auth.isAuthenticated()) {
   <div class="shell">
-    <app-header></app-header>
+    @if (auth.portal() === 'client') {
+      <app-client-header></app-client-header>
+    } @else {
+      <app-header></app-header>
+    }
     <main class="main">
       <router-outlet></router-outlet>
     </main>
   </div>
+  <app-toast-container></app-toast-container>
 } @else {
   <router-outlet></router-outlet>
 }

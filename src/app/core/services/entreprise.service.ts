@@ -15,6 +15,11 @@ export class EntrepriseService {
     return this.http.post<BasePaginatedList<EntrepriseDto>>(`${this.baseUrl}/list`, query);
   }
 
+  /** Entreprises the current user has access to — for populating a picker, not the SuperAdmin-only admin list. */
+  getMine(): Observable<EntrepriseDto[]> {
+    return this.http.get<EntrepriseDto[]>(`${this.baseUrl}/mine`);
+  }
+
   getById(id: number): Observable<EntrepriseDto> {
     return this.http.get<EntrepriseDto>(`${this.baseUrl}/${id}`);
   }

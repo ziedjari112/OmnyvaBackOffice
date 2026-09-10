@@ -1,0 +1,77 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'loyalty.award.title' | translate }}</h1>
+  </div>
+
+  @if (submitted()) {
+    <div class="qr-card">
+      <p>{{ 'loyalty.award.success' | translate }}</p>
+      <button class="btn primary" (click)="reset()">{{ 'loyalty.award.new' | translate }}</button>
+    </div>
+  } @else {
+    <div class="lookup-row">
+      <label>
+        {{ 'loyalty.award.referenceCode' | translate }}
+        <input
+          type="text"
+          [ngModel]="referenceCode()"
+          (ngModelChange)="referenceCode.set($event)"
+          [placeholder]="'loyalty.award.referenceCodePlaceholder' | translate"
+        />
+      </label>
+      <button class="btn primary" [disabled]="lookingUp() || !referenceCode().trim()" (click)="lookup()">
+        {{ 'loyalty.award.lookup' | translate }}
+      </button>
+    </div>
+
+    @if (lookupError()) {
+      <p class="error">{{ lookupError()! | translate }}</p>
+    }
+
+    @if (customer()) {
+      <div class="customer-card">
+        <strong>{{ customer()!.name }}</strong> — {{ customer()!.email }}
+      </div>
+
+      <div class="line-row">
+        <select [ngModel]="newLineProductId()" (ngModelChange)="newLineProductId.set($event ? +$event : null)">
+          <option [ngValue]="null">{{ 'loyalty.award.selectProduct' | translate }}</option>
+          @for (product of productsForCurrentEntreprise; track product.id) {
+            <option [value]="product.id">{{ product.name }} ({{ product.loyaltyPoints }} pts)</option>
+          }
+        </select>
+        <input type="number" min="1" [ngModel]="newLineQuantity()" (ngModelChange)="newLineQuantity.set(+$event)" />
+        <button type="button" class="btn" (click)="addLine()">{{ 'common.add' | translate }}</button>
+      </div>
+
+      @if (lines().length > 0) {
+        <table>
+          <tr>
+            <th>{{ 'products.title' | translate }}</th>
+            <th>{{ 'loyalty.award.quantity' | translate }}</th>
+            <th></th>
+          </tr>
+          @for (line of lines(); track line.productId) {
+            <tr>
+              <td>{{ productName(line.productId) }}</td>
+              <td>{{ line.quantity }}</td>
+              <td class="row-actions">
+                <button class="btn danger" (click)="removeLine(line.productId)">{{ 'common.delete' | translate }}</button>
+              </td>
+            </tr>
+          }
+        </table>
+      }
+
+      @if (submitError()) {
+        <p class="error">{{ submitError()! | translate }}</p>
+      }
+
+      <div class="modal-actions">
+        <button class="btn primary" [disabled]="submitting() || lines().length === 0" (click)="submit()">
+          {{ 'loyalty.award.submit' | translate }}
+        </button>
+      </div>
+    }
+  }
+</div>

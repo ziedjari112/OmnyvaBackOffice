@@ -1,0 +1,53 @@
+/* Same structural/visual language as <app-header> — see header.scss for the rationale on each rule. */
+:host {
+  display: contents;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 4px;
+  background: var(--sidebar-hover);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.lang-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #c9c6d6;
+
+  &.active {
+    background: var(--primary);
+    color: #ffffff;
+  }
+}
+
+.unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sb-logout {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #c9c6d6;
+
+  &:hover:not(:disabled) {
+    background: var(--sidebar-hover);
+  }
+}

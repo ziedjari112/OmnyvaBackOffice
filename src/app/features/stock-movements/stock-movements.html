@@ -1,0 +1,170 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'stockMovements.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'stockMovements.new' | translate }}</button>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (movements().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'stockMovements.type' | translate }}</th>
+        <th>{{ 'suppliers.entreprise' | translate }}</th>
+        <th>{{ 'stockMovements.supplier' | translate }}</th>
+        <th>{{ 'stockMovements.totalTTC' | translate }}</th>
+        <th>{{ 'stockMovements.date' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (movement of movements(); track movement.id) {
+        <tr>
+          <td>
+            <span class="badge" [class.success]="movement.type === 'Receipt'" [class.neutral]="movement.type === 'Adjustment'">
+              {{ ('stockMovements.type.' + movement.type) | translate }}
+            </span>
+          </td>
+          <td>{{ entrepriseName(movement.entrepriseId) }}</td>
+          <td>{{ movement.supplierName || '—' }}</td>
+          <td>{{ movement.totalTTC | number: '1.2-2' }}</td>
+          <td>{{ movement.createdAt | date: 'short' }}</td>
+          <td class="row-actions">
+            <button class="btn" (click)="toggleExpand(movement)">
+              {{ (expandedId() === movement.id ? 'common.hide' : 'stockMovements.viewLines') | translate }}
+            </button>
+          </td>
+        </tr>
+        @if (expandedId() === movement.id) {
+          <tr>
+            <td colspan="6">
+              <table class="hours-table">
+                <tr>
+                  <th>{{ 'stockMovements.product' | translate }}</th>
+                  <th>{{ 'stockMovements.quantity' | translate }}</th>
+                  <th>{{ 'stockMovements.unitPriceHT' | translate }}</th>
+                  <th>{{ 'stockMovements.totalTTC' | translate }}</th>
+                </tr>
+                @for (line of movement.lines; track line.id) {
+                  <tr>
+                    <td>{{ line.productName }}</td>
+                    <td>{{ line.quantity }}</td>
+                    <td>{{ line.unitPriceHT | number: '1.2-2' }}</td>
+                    <td>{{ line.totalTTC | number: '1.2-2' }}</td>
+                  </tr>
+                }
+              </table>
+            </td>
+          </tr>
+        }
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ 'stockMovements.new' | translate }}</h2>
+
+        <div class="form-grid">
+          <label>
+            {{ 'stockMovements.type' | translate }}
+            <select name="type" [ngModel]="type()" (ngModelChange)="onTypeChange($event)" required>
+              @for (t of types; track t) {
+                <option [value]="t">{{ ('stockMovements.type.' + t) | translate }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'suppliers.entreprise' | translate }}
+            <select name="entrepriseId" [ngModel]="entrepriseId()" (ngModelChange)="entrepriseId.set(+$event)" required>
+              @for (entreprise of entreprises(); track entreprise.id) {
+                <option [value]="entreprise.id">{{ entreprise.name }}</option>
+              }
+            </select>
+          </label>
+          @if (type() === 'Receipt') {
+            <label class="full">
+              {{ 'stockMovements.supplier' | translate }}
+              <select name="supplierId" [ngModel]="supplierId()" (ngModelChange)="supplierId.set($event ? +$event : null)" required>
+                <option [ngValue]="null">{{ 'stockMovements.pickSupplier' | translate }}</option>
+                @for (supplier of suppliersForCurrentEntreprise; track supplier.id) {
+                  <option [value]="supplier.id">{{ supplier.name }}</option>
+                }
+              </select>
+            </label>
+          }
+        </div>
+
+        <label class="full coord-label">{{ 'stockMovements.lines' | translate }}</label>
+        <div class="role-list">
+          @for (line of lines(); track $index) {
+            <div class="role-row">
+              <span>{{ productName(line.productId!) }}</span>
+              <span class="muted">{{ 'stockMovements.quantity' | translate }}: {{ line.quantity }}</span>
+              @if (type() === 'Receipt') {
+                <span class="muted">{{ 'stockMovements.unitPriceHT' | translate }}: {{ line.unitPriceHT }}</span>
+              }
+              <button type="button" class="btn danger" (click)="removeLine($index)">{{ 'common.delete' | translate }}</button>
+            </div>
+          }
+          @if (lines().length === 0) {
+            <p class="muted">{{ 'stockMovements.noLines' | translate }}</p>
+          }
+        </div>
+
+        <div class="role-add">
+          <select
+            [ngModel]="draftLine().productId"
+            (ngModelChange)="updateDraftLine('productId', $event ? +$event : null)"
+            name="draftProductId"
+          >
+            <option [ngValue]="null">{{ 'stockMovements.pickProduct' | translate }}</option>
+            @for (product of productsForCurrentEntreprise; track product.id) {
+              <option [value]="product.id">{{ product.name }}</option>
+            }
+          </select>
+          <input
+            type="number"
+            [ngModel]="draftLine().quantity"
+            (ngModelChange)="updateDraftLine('quantity', +$event)"
+            name="draftQuantity"
+            [placeholder]="'stockMovements.quantity' | translate"
+            min="1"
+          />
+          @if (type() === 'Receipt') {
+            <input
+              type="number"
+              [ngModel]="draftLine().unitPriceHT"
+              (ngModelChange)="updateDraftLine('unitPriceHT', $event ? +$event : null)"
+              name="draftUnitPriceHT"
+              [placeholder]="'stockMovements.unitPriceHT' | translate"
+              min="0"
+              step="0.01"
+            />
+          }
+          <button type="button" class="btn" (click)="addLine()">{{ 'common.add' | translate }}</button>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

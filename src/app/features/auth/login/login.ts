@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
@@ -11,7 +11,7 @@ const NOT_AUTHORIZED_MESSAGE = 'This account does not have access to the back of
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })

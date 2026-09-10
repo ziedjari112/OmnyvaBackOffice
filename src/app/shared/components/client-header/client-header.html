@@ -1,0 +1,39 @@
+<aside class="sidebar">
+  <a class="sb-brand" routerLink="/my-loyalty">
+    <div class="logo">Ov</div>
+    <div class="name">{{ 'app.name' | translate }}</div>
+  </a>
+
+  <nav class="sb-nav">
+    <a routerLink="/my-loyalty" routerLinkActive="active" class="sb-item">
+      <span class="dot"></span>{{ 'loyalty.myTitle' | translate }}
+    </a>
+    <a routerLink="/notifications" routerLinkActive="active" class="sb-item">
+      <span class="dot"></span>{{ 'notifications.title' | translate }}
+      @if (unreadNotificationCount() > 0) {
+        <span class="unread-badge">{{ unreadNotificationCount() }}</span>
+      }
+    </a>
+  </nav>
+
+  <div class="sb-footer">
+    <div class="lang-switch">
+      @for (locale of locales; track locale) {
+        <button
+          type="button"
+          class="lang-btn"
+          [class.active]="i18n.locale() === locale"
+          (click)="setLocale(locale)"
+        >
+          {{ locale.toUpperCase() }}
+        </button>
+      }
+    </div>
+
+    <a routerLink="/account" routerLinkActive="active" class="sb-item">
+      <span class="dot"></span>{{ 'account.title' | translate }}
+    </a>
+
+    <button class="btn sb-logout" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
+  </div>
+</aside>
