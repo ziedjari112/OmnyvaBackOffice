@@ -19,6 +19,9 @@
           @if (item.route === '/notifications' && unreadNotificationCount() > 0) {
             <span class="unread-badge">{{ unreadNotificationCount() }}</span>
           }
+          @if (item.route === '/chat' && chatService.unreadCount() > 0) {
+            <span class="unread-badge">{{ chatService.unreadCount() }}</span>
+          }
         </a>
       }
     }

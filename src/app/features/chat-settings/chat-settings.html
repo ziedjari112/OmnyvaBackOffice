@@ -1,0 +1,30 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'chatSettings.title' | translate }}</h1>
+  </div>
+
+  <p class="muted">{{ 'chatSettings.hint' | translate }}</p>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (staffWithLogin().length === 0) {
+    <p class="muted">{{ 'chatSettings.noStaff' | translate }}</p>
+  } @else {
+    <div class="role-list">
+      @for (staff of staffWithLogin(); track staff.id) {
+        <label class="role-row">
+          <input type="checkbox" [checked]="isSelected(staff)" (change)="toggle(staff)" />
+          <span>{{ staff.name }}</span>
+        </label>
+      }
+    </div>
+
+    @if (saved()) {
+      <p class="muted">{{ 'common.saved' | translate }}</p>
+    }
+
+    <div class="modal-actions">
+      <button class="btn primary" [disabled]="saving()" (click)="save()">{{ 'common.save' | translate }}</button>
+    </div>
+  }
+</div>

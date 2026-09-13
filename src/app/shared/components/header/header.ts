@@ -6,6 +6,7 @@ import { I18nService } from '../../../core/services/i18n.service';
 import { MenuService } from '../../../core/services/menu.service';
 import { EntrepriseService } from '../../../core/services/entreprise.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { Locale } from '../../../core/i18n/translations';
 import { MenuDto } from '../../../core/models/menu.model';
 import { EntrepriseDto } from '../../../core/models/entreprise.model';
@@ -25,6 +26,7 @@ export class Header {
   private readonly menuService = inject(MenuService);
   private readonly entrepriseService = inject(EntrepriseService);
   private readonly notificationService = inject(NotificationService);
+  protected readonly chatService = inject(ChatService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly locales: Locale[] = ['en', 'fr', 'ar'];

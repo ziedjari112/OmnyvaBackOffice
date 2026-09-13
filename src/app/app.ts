@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from './shared/components/header/header';
-import { ClientHeader } from './shared/components/client-header/client-header';
 import { ToastContainer } from './shared/components/toast/toast';
 import { AuthService } from './core/services/auth.service';
 import { NotificationHubService } from './core/services/notification-hub.service';
@@ -9,7 +8,7 @@ import { NotificationHubService } from './core/services/notification-hub.service
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Header, ClientHeader, ToastContainer],
+  imports: [RouterOutlet, Header, ToastContainer],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

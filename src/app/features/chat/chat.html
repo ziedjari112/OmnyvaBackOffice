@@ -1,0 +1,66 @@
+<div class="page-container chat-page">
+  <h1>{{ 'chat.title' | translate }}</h1>
+
+  <div class="chat-layout">
+    <div class="thread-list">
+      @if (loadingThreads()) {
+        <p class="muted">{{ 'common.loading' | translate }}</p>
+      } @else if (threads().length === 0) {
+        <p class="muted">{{ 'chat.empty' | translate }}</p>
+      } @else {
+        @for (thread of threads(); track thread.id) {
+          <div
+            class="thread-item"
+            [class.active]="selectedThread()?.id === thread.id"
+            (click)="selectThread(thread)"
+          >
+            <div class="thread-name">{{ thread.clientName }}</div>
+            <div class="thread-preview muted">{{ thread.lastMessagePreview || ('chat.noMessages' | translate) }}</div>
+            @if (thread.unreadCount > 0) {
+              <span class="unread-badge">{{ thread.unreadCount }}</span>
+            }
+          </div>
+        }
+      }
+    </div>
+
+    <div class="thread-conversation">
+      @if (!selectedThread()) {
+        <p class="muted select-hint">{{ 'chat.selectThread' | translate }}</p>
+      } @else {
+        <div class="conversation-header">{{ selectedThread()!.clientName }}</div>
+
+        <div class="message-list">
+          @if (loadingMessages()) {
+            <p class="muted">{{ 'common.loading' | translate }}</p>
+          } @else {
+            @for (message of messages(); track message.id) {
+              <div class="message" [class.mine]="!message.isFromClient">
+                <div class="message-body">{{ message.body }}</div>
+                <div class="message-date muted">
+                  @if (!message.isFromClient && message.isReadByClient) {
+                    {{ 'chat.read' | translate }} ·
+                  }
+                  {{ message.createdAt | date: 'short' }}
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <form class="composer" (ngSubmit)="send()">
+          <input
+            type="text"
+            [ngModel]="draft()"
+            (ngModelChange)="draft.set($event)"
+            name="draft"
+            [placeholder]="'chat.messagePlaceholder' | translate"
+          />
+          <button type="submit" class="btn primary" [disabled]="sending() || !draft().trim()">
+            {{ 'chat.send' | translate }}
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+</div>

@@ -5,11 +5,13 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
 import { NotificationDto } from '../models/notification.model';
+import { ChatMessageDto, ChatReadReceiptDto } from '../models/chat.model';
 
 /**
- * Live push channel for notifications (see Omnyva.Infrastructure/Realtime/NotificationsHub.cs).
- * Connects once a user is authenticated so the unread badge and the toast popup update instantly
- * instead of waiting on the header's 60s polling fallback.
+ * Live push channel for notifications and chat messages (see
+ * Omnyva.Infrastructure/Realtime/NotificationsHub.cs — both travel over the same per-user
+ * connection, just under different event names). Connects once a user is authenticated so the
+ * unread badge, the toast popup and any open chat thread update instantly instead of polling.
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationHubService {
@@ -20,6 +22,12 @@ export class NotificationHubService {
 
   private readonly notificationReceivedSource = new Subject<NotificationDto>();
   readonly notificationReceived$ = this.notificationReceivedSource.asObservable();
+
+  private readonly chatMessageReceivedSource = new Subject<ChatMessageDto>();
+  readonly chatMessageReceived$ = this.chatMessageReceivedSource.asObservable();
+
+  private readonly chatThreadReadSource = new Subject<ChatReadReceiptDto>();
+  readonly chatThreadRead$ = this.chatThreadReadSource.asObservable();
 
   constructor() {
     effect(() => {
@@ -41,6 +49,14 @@ export class NotificationHubService {
     this.connection.on('notificationReceived', (notification: NotificationDto) => {
       this.notificationReceivedSource.next(notification);
       this.toastService.show(notification.title, notification.message);
+    });
+
+    this.connection.on('chatMessageReceived', (message: ChatMessageDto) => {
+      this.chatMessageReceivedSource.next(message);
+    });
+
+    this.connection.on('chatThreadRead', (receipt: ChatReadReceiptDto) => {
+      this.chatThreadReadSource.next(receipt);
     });
 
     this.connection.start().catch(() => void 0);
