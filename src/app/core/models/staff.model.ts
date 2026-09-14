@@ -3,15 +3,19 @@ export interface StaffDto {
   name: string;
   phone?: string | null;
   email?: string | null;
+  photoUrl?: string | null;
   entrepriseId: number;
   userId?: number | null;
   isActive: boolean;
+  averageRating: number;
+  reviewCount: number;
 }
 
 export interface StaffUpsertDto {
   name: string;
   phone?: string | null;
   email?: string | null;
+  photoUrl?: string | null;
   entrepriseId: number;
   userId?: number | null;
 }

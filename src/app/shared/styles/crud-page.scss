@@ -27,6 +27,17 @@ h1 {
   gap: 6px;
 }
 
+.filters-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.totals {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
 .pagination {
   display: flex;
   align-items: center;

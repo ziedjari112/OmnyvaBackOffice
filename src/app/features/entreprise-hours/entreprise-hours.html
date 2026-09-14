@@ -1,0 +1,52 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'entrepriseHours.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else {
+    <table class="hours-table">
+      <tr>
+        <th>{{ 'staff.day' | translate }}</th>
+        <th>{{ 'staff.dayOff' | translate }}</th>
+        <th>{{ 'staff.startTime' | translate }}</th>
+        <th>{{ 'staff.endTime' | translate }}</th>
+      </tr>
+      @for (day of workingHours(); track day.dayOfWeek) {
+        <tr>
+          <td>{{ ('staff.dayOfWeek.' + day.dayOfWeek) | translate }}</td>
+          <td>
+            <input type="checkbox" [checked]="day.isDayOff" (change)="toggleDayOff(day.dayOfWeek, $any($event.target).checked)" />
+          </td>
+          <td>
+            <input
+              type="time"
+              [disabled]="day.isDayOff"
+              [ngModel]="timeInputValue(day, 'startTime')"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="updateDayTime(day.dayOfWeek, 'startTime', $event)"
+            />
+          </td>
+          <td>
+            <input
+              type="time"
+              [disabled]="day.isDayOff"
+              [ngModel]="timeInputValue(day, 'endTime')"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="updateDayTime(day.dayOfWeek, 'endTime', $event)"
+            />
+          </td>
+        </tr>
+      }
+    </table>
+    <div class="hours-actions">
+      <button type="button" class="btn primary" [disabled]="saving()" (click)="save()">
+        {{ 'staff.saveHours' | translate }}
+      </button>
+      @if (saved()) {
+        <span class="muted">{{ 'common.saved' | translate }}</span>
+      }
+    </div>
+  }
+</div>

@@ -13,11 +13,13 @@ import { EntrepriseService } from '../../core/services/entreprise.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { ServiceService } from '../../core/services/service.service';
 import { StaffService } from '../../core/services/staff.service';
+import { UploadService } from '../../core/services/upload.service';
 
 const EMPTY_FORM: StaffUpsertDto = {
   name: '',
   phone: null,
   email: null,
+  photoUrl: null,
   entrepriseId: 0,
 };
 
@@ -61,6 +63,8 @@ export class Staff {
   private readonly entrepriseService = inject(EntrepriseService);
   private readonly serviceService = inject(ServiceService);
   private readonly i18n = inject(I18nService);
+  protected readonly uploadService = inject(UploadService);
+  readonly uploadingPhoto = signal(false);
 
   readonly staff = signal<StaffDto[]>([]);
   readonly entreprises = signal<EntrepriseDto[]>([]);
@@ -223,6 +227,7 @@ export class Staff {
       name: member.name,
       phone: member.phone,
       email: member.email,
+      photoUrl: member.photoUrl,
       entrepriseId: member.entrepriseId,
     });
     this.assignedServiceIds.set(new Set());
@@ -237,6 +242,23 @@ export class Staff {
 
   closeForm(): void {
     this.showForm.set(false);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.uploadingPhoto.set(true);
+    this.uploadService.uploadImage(file, 'staff').subscribe({
+      next: (url) => {
+        this.form.update((f) => ({ ...f, photoUrl: url }));
+        this.uploadingPhoto.set(false);
+      },
+      error: () => {
+        this.uploadingPhoto.set(false);
+        this.error.set('common.error.generic');
+      }
+    });
   }
 
   submit(): void {

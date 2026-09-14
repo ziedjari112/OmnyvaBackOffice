@@ -1,0 +1,54 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'payroll.title' | translate }}</h1>
+  </div>
+
+  <div class="filters-row">
+    <label>
+      {{ 'payroll.from' | translate }}
+      <input type="date" [ngModel]="from()" (ngModelChange)="onFromChange($event)" />
+    </label>
+    <label>
+      {{ 'payroll.to' | translate }}
+      <input type="date" [ngModel]="to()" (ngModelChange)="onToChange($event)" />
+    </label>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (summary(); as s) {
+    <p class="totals">
+      {{ 'payroll.entrepriseTotal' | translate }}: <strong>{{ s.entrepriseTotal | money: tenant.currentCurrency() }}</strong>
+    </p>
+
+    @if (s.byStaff.length === 0) {
+      <p class="muted">{{ 'common.empty' | translate }}</p>
+    } @else {
+      <table>
+        <tr>
+          <th>{{ 'staff.name' | translate }}</th>
+          <th>{{ 'payroll.generatedInPeriod' | translate }}</th>
+          <th>{{ 'payroll.unsettledBalance' | translate }}</th>
+          <th></th>
+        </tr>
+        @for (row of s.byStaff; track row.staffId) {
+          <tr>
+            <td>{{ row.staffName }}</td>
+            <td>{{ row.generatedInPeriod | money: tenant.currentCurrency() }}</td>
+            <td>{{ row.unsettledBalance | money: tenant.currentCurrency() }}</td>
+            <td class="row-actions">
+              <a class="btn" [routerLink]="['/payroll/staff', row.staffId]">{{ 'payroll.history' | translate }}</a>
+              <button
+                class="btn primary"
+                [disabled]="settlingId() === row.staffId || row.unsettledBalance <= 0"
+                (click)="settle(row.staffId)"
+              >
+                {{ 'payroll.settle' | translate }}
+              </button>
+            </td>
+          </tr>
+        }
+      </table>
+    }
+  }
+</div>

@@ -2,7 +2,14 @@
   <div class="shell">
     <app-header></app-header>
     <main class="main">
-      <router-outlet></router-outlet>
+      @if (subscriptionStatus.isExpired()) {
+        <app-subscription-expired></app-subscription-expired>
+      } @else {
+        @if (subscriptionStatus.isExpiringSoon()) {
+          <app-subscription-banner></app-subscription-banner>
+        }
+        <router-outlet></router-outlet>
+      }
     </main>
   </div>
   <app-toast-container></app-toast-container>

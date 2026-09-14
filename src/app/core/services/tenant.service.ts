@@ -1,5 +1,7 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { AuthService } from './auth.service';
+import { EntrepriseService } from './entreprise.service';
+import { EntrepriseDto } from '../models/entreprise.model';
 
 const STORAGE_KEY = 'omnyva.backoffice.entrepriseId';
 
@@ -10,7 +12,19 @@ const STORAGE_KEY = 'omnyva.backoffice.entrepriseId';
  */
 @Injectable({ providedIn: 'root' })
 export class TenantService {
+  private readonly entrepriseService = inject(EntrepriseService);
+
   readonly currentEntrepriseId = signal<number | null>(this.readInitial());
+
+  /** Entreprises the current user has access to — single source of truth so the sidebar's entreprise
+   * picker and any per-entreprise display (e.g. currency) don't each fetch it separately. */
+  readonly availableEntreprises = signal<EntrepriseDto[]>([]);
+
+  /** Currency of the entreprise currently acted as, resolved from availableEntreprises — falls back to
+   * "TND" when nothing is scoped yet (e.g. SuperAdmin with no entreprise picked). */
+  readonly currentCurrency = computed(
+    () => this.availableEntreprises().find((e) => e.id === this.currentEntrepriseId())?.currency ?? 'TND'
+  );
 
   /** Distinct entreprise ids the current user holds a entreprise-scoped role at. */
   readonly availableEntrepriseIds = computed(() => {
@@ -31,6 +45,14 @@ export class TenantService {
       const id = this.currentEntrepriseId();
       if (id === null) localStorage.removeItem(STORAGE_KEY);
       else localStorage.setItem(STORAGE_KEY, String(id));
+    });
+
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.entrepriseService.getMine().subscribe((entreprises) => this.availableEntreprises.set(entreprises));
+      } else {
+        this.availableEntreprises.set([]);
+      }
     });
 
     // A user scoped to exactly one entreprise (e.g. Staff, ResponsableEntreprise) has no reason to see

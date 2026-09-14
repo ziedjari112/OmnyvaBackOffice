@@ -3,9 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { ServiceService } from '../../core/services/service.service';
 import { EntrepriseService } from '../../core/services/entreprise.service';
 import { I18nService } from '../../core/services/i18n.service';
+import { TenantService } from '../../core/services/tenant.service';
 import { ServiceDto, ServiceUpsertDto } from '../../core/models/service.model';
 import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { MoneyPipe } from '../../core/pipes/money.pipe';
 
 const EMPTY_FORM: ServiceUpsertDto = {
   name: '',
@@ -19,7 +21,7 @@ const EMPTY_FORM: ServiceUpsertDto = {
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe, MoneyPipe],
   templateUrl: './services.html',
   styleUrl: '../../shared/styles/crud-page.scss'
 })
@@ -27,6 +29,7 @@ export class Services {
   private readonly serviceService = inject(ServiceService);
   private readonly entrepriseService = inject(EntrepriseService);
   private readonly i18n = inject(I18nService);
+  protected readonly tenant = inject(TenantService);
 
   readonly services = signal<ServiceDto[]>([]);
   readonly entreprises = signal<EntrepriseDto[]>([]);

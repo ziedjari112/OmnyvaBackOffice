@@ -28,14 +28,14 @@
   </nav>
 
   <div class="sb-footer">
-    @if (availableEntreprises().length > 0) {
+    @if (tenant.availableEntreprises().length > 0) {
       <select
         class="entreprise-select"
         [value]="entrepriseSelectValue()"
         (change)="onEntrepriseChange($any($event.target).value)"
       >
         <option value="">{{ 'nav.entreprise.all' | translate }}</option>
-        @for (entreprise of availableEntreprises(); track entreprise.id) {
+        @for (entreprise of tenant.availableEntreprises(); track entreprise.id) {
           <option [value]="entreprise.id">{{ entreprise.name }}</option>
         }
       </select>

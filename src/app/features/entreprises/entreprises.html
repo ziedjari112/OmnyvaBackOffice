@@ -22,6 +22,7 @@
         <th>{{ 'entreprises.name' | translate }}</th>
         <th>{{ 'entreprises.businessType' | translate }}</th>
         <th>{{ 'entreprises.city' | translate }}</th>
+        <th>{{ 'entreprises.currency' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
       </tr>
@@ -30,6 +31,7 @@
           <td>{{ entreprise.name }}</td>
           <td>{{ ('entreprises.businessType.' + entreprise.businessType) | translate }}</td>
           <td>{{ entreprise.city }}</td>
+          <td>{{ entreprise.currency }}</td>
           <td>
             <span class="badge" [class.success]="entreprise.isActive" [class.neutral]="!entreprise.isActive">
               {{ (entreprise.isActive ? 'common.active' : 'common.inactive') | translate }}
@@ -145,6 +147,21 @@
             {{ 'entreprises.website' | translate }}
             <input type="text" name="website" [ngModel]="form().website" (ngModelChange)="form.update((f) => ({ ...f, website: $event }))" />
           </label>
+          <label>
+            {{ 'entreprises.currency' | translate }}
+            <select
+              name="currency"
+              [ngModel]="form().currency"
+              (ngModelChange)="form.update((f) => ({ ...f, currency: $event }))"
+              required
+            >
+              @for (currency of currencies(); track currency.code) {
+                <option [value]="currency.code">
+                  {{ ('currency.' + currency.code) | translate }} ({{ currency.symbol || currency.code }})
+                </option>
+              }
+            </select>
+          </label>
 
           <label class="full coord-label">{{ 'entreprises.coordinates' | translate }}</label>
           <label>
@@ -192,6 +209,124 @@
               />
             </label>
           </div>
+        }
+
+        @if (tenant.hasGlobalRole()) {
+          <label class="full coord-label">{{ 'entreprises.subscription' | translate }}</label>
+
+          @if (!editingId()) {
+            <div class="form-grid">
+              <label>
+                {{ 'subscription.plan' | translate }}
+                <select
+                  name="subscriptionPlanId"
+                  [ngModel]="form().subscriptionPlanId"
+                  (ngModelChange)="form.update((f) => ({ ...f, subscriptionPlanId: $event ? +$event : null }))"
+                >
+                  <option [value]="null">—</option>
+                  @for (plan of plansForBusinessType(form().businessType); track plan.id) {
+                    <option [value]="plan.id">{{ plan.name }} ({{ plan.price | money: 'TND' }})</option>
+                  }
+                </select>
+              </label>
+              <label>
+                {{ 'entreprises.subscriptionStart' | translate }}
+                <input
+                  type="date"
+                  name="subscriptionStartDate"
+                  [ngModel]="form().subscriptionStartDate"
+                  (ngModelChange)="form.update((f) => ({ ...f, subscriptionStartDate: $event || null }))"
+                />
+              </label>
+              <label>
+                {{ 'entreprises.subscriptionEnd' | translate }}
+                <input
+                  type="date"
+                  name="subscriptionEndDate"
+                  [ngModel]="form().subscriptionEndDate"
+                  (ngModelChange)="form.update((f) => ({ ...f, subscriptionEndDate: $event || null }))"
+                />
+              </label>
+              <label>
+                {{ 'subscription.discount' | translate }}
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  name="subscriptionDiscountPercentage"
+                  [ngModel]="form().subscriptionDiscountPercentage"
+                  (ngModelChange)="form.update((f) => ({ ...f, subscriptionDiscountPercentage: +$event }))"
+                />
+              </label>
+            </div>
+          } @else {
+            <p class="muted">
+              {{
+                subscriptionStatus()?.hasSubscription
+                  ? ('entreprises.subscriptionStatus.' + (subscriptionStatus()!.isExpired ? 'expired' : 'active') | translate) +
+                    ' — ' +
+                    (subscriptionStatus()!.planName ?? '') +
+                    ' (' +
+                    (subscriptionStatus()!.finalPrice ?? 0) +
+                    ')'
+                  : ('entreprises.subscriptionStatus.none' | translate)
+              }}
+            </p>
+            <div class="form-grid">
+              <label>
+                {{ 'subscription.plan' | translate }}
+                <select
+                  name="editSubscriptionPlanId"
+                  [ngModel]="subscriptionForm().planId"
+                  (ngModelChange)="subscriptionForm.update((f) => ({ ...f, planId: $event ? +$event : null }))"
+                >
+                  <option [value]="null">—</option>
+                  @for (plan of plansForBusinessType(form().businessType); track plan.id) {
+                    <option [value]="plan.id">{{ plan.name }} ({{ plan.price | money: 'TND' }})</option>
+                  }
+                </select>
+              </label>
+              <label>
+                {{ 'entreprises.subscriptionStart' | translate }}
+                <input
+                  type="date"
+                  name="editSubscriptionStartDate"
+                  [ngModel]="subscriptionForm().startDate"
+                  (ngModelChange)="subscriptionForm.update((f) => ({ ...f, startDate: $event }))"
+                />
+              </label>
+              <label>
+                {{ 'entreprises.subscriptionEnd' | translate }}
+                <input
+                  type="date"
+                  name="editSubscriptionEndDate"
+                  [ngModel]="subscriptionForm().endDate"
+                  (ngModelChange)="subscriptionForm.update((f) => ({ ...f, endDate: $event }))"
+                />
+              </label>
+              <label>
+                {{ 'subscription.discount' | translate }}
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  name="editSubscriptionDiscountPercentage"
+                  [ngModel]="subscriptionForm().discountPercentage"
+                  (ngModelChange)="subscriptionForm.update((f) => ({ ...f, discountPercentage: +$event }))"
+                />
+              </label>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn" [disabled]="subscriptionSaving()" (click)="saveSubscription()">
+                {{ 'entreprises.subscriptionSave' | translate }}
+              </button>
+              @if (subscriptionSaved()) {
+                <span class="muted">{{ 'common.saved' | translate }}</span>
+              }
+            </div>
+          }
         }
 
         @if (error()) {

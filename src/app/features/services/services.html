@@ -31,7 +31,7 @@
         <tr>
           <td>{{ service.name }}</td>
           <td>{{ entrepriseName(service.entrepriseId) }}</td>
-          <td>{{ service.price }}</td>
+          <td>{{ service.price | money: tenant.currentCurrency() }}</td>
           <td>{{ service.durationMinutes }} {{ 'services.minutes' | translate }}</td>
           <td>{{ service.loyaltyPoints }}</td>
           <td>

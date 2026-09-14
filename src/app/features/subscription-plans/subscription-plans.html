@@ -1,0 +1,106 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'subscriptionPlans.title' | translate }}</h1>
+    <button class="btn primary" (click)="openCreate()">+ {{ 'subscriptionPlans.new' | translate }}</button>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (plans().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'subscriptionPlans.name' | translate }}</th>
+        <th>{{ 'entreprises.businessType' | translate }}</th>
+        <th>{{ 'subscriptionPlans.isTrial' | translate }}</th>
+        <th>{{ 'subscriptionPlans.price' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (plan of plans(); track plan.id) {
+        <tr>
+          <td>{{ plan.name }}</td>
+          <td>{{ ('entreprises.businessType.' + plan.businessType) | translate }}</td>
+          <td>
+            <span class="badge" [class.warning]="plan.isTrial" [class.neutral]="!plan.isTrial">
+              {{ (plan.isTrial ? 'subscriptionPlans.trial' : 'subscriptionPlans.paid') | translate }}
+            </span>
+          </td>
+          <td>{{ plan.price | money: 'TND' }}</td>
+          <td class="row-actions">
+            <button class="btn" (click)="openEdit(plan)">{{ 'common.edit' | translate }}</button>
+            <button class="btn danger" (click)="remove(plan)">{{ 'common.delete' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop" (click)="closeForm()">
+      <form class="modal" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+        <h2>{{ (editingId() ? 'subscriptionPlans.editTitle' : 'subscriptionPlans.new') | translate }}</h2>
+
+        <div class="form-grid">
+          <label class="full">
+            {{ 'subscriptionPlans.name' | translate }}
+            <input type="text" name="name" [ngModel]="form().name" (ngModelChange)="form.update((f) => ({ ...f, name: $event }))" required />
+          </label>
+          <label class="full">
+            {{ 'entreprises.businessType' | translate }}
+            <select
+              name="businessType"
+              [ngModel]="form().businessType"
+              (ngModelChange)="form.update((f) => ({ ...f, businessType: $event }))"
+              required
+            >
+              @for (type of businessTypes; track type) {
+                <option [value]="type">{{ ('entreprises.businessType.' + type) | translate }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            {{ 'subscriptionPlans.price' | translate }}
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              name="price"
+              [ngModel]="form().price"
+              (ngModelChange)="form.update((f) => ({ ...f, price: +$event }))"
+              required
+            />
+          </label>
+          <label>
+            {{ 'subscriptionPlans.isTrial' | translate }}
+            <input
+              type="checkbox"
+              name="isTrial"
+              [ngModel]="form().isTrial"
+              (ngModelChange)="form.update((f) => ({ ...f, isTrial: $event }))"
+            />
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error">{{ error()! | translate }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -5,10 +5,12 @@ import { EntrepriseService } from '../../core/services/entreprise.service';
 import { FamilyService } from '../../core/services/family.service';
 import { UploadService } from '../../core/services/upload.service';
 import { I18nService } from '../../core/services/i18n.service';
+import { TenantService } from '../../core/services/tenant.service';
 import { ProductDto, ProductUpsertDto } from '../../core/models/product.model';
 import { EntrepriseDto } from '../../core/models/entreprise.model';
 import { FamilyDto } from '../../core/models/family.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { MoneyPipe } from '../../core/pipes/money.pipe';
 
 const EMPTY_FORM: ProductUpsertDto = {
   name: '',
@@ -23,7 +25,7 @@ const EMPTY_FORM: ProductUpsertDto = {
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe, MoneyPipe],
   templateUrl: './products.html',
   styleUrl: '../../shared/styles/crud-page.scss'
 })
@@ -33,6 +35,7 @@ export class Products {
   private readonly familyService = inject(FamilyService);
   protected readonly uploadService = inject(UploadService);
   private readonly i18n = inject(I18nService);
+  protected readonly tenant = inject(TenantService);
 
   readonly products = signal<ProductDto[]>([]);
   readonly entreprises = signal<EntrepriseDto[]>([]);

@@ -1,18 +1,21 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { OrderService } from '../../core/services/order.service';
+import { TenantService } from '../../core/services/tenant.service';
 import { OrderDto } from '../../core/models/order.model';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { MoneyPipe } from '../../core/pipes/money.pipe';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [TranslatePipe, DecimalPipe, DatePipe],
+  imports: [TranslatePipe, MoneyPipe, DatePipe],
   templateUrl: './orders.html',
   styleUrl: '../../shared/styles/crud-page.scss'
 })
 export class Orders {
   private readonly orderService = inject(OrderService);
+  protected readonly tenant = inject(TenantService);
 
   readonly orders = signal<OrderDto[]>([]);
   readonly loading = signal(true);

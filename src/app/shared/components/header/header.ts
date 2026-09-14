@@ -4,12 +4,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TenantService } from '../../../core/services/tenant.service';
 import { I18nService } from '../../../core/services/i18n.service';
 import { MenuService } from '../../../core/services/menu.service';
-import { EntrepriseService } from '../../../core/services/entreprise.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ChatService } from '../../../core/services/chat.service';
 import { Locale } from '../../../core/i18n/translations';
 import { MenuDto } from '../../../core/models/menu.model';
-import { EntrepriseDto } from '../../../core/models/entreprise.model';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
@@ -24,14 +22,12 @@ export class Header {
   protected readonly tenant = inject(TenantService);
   protected readonly i18n = inject(I18nService);
   private readonly menuService = inject(MenuService);
-  private readonly entrepriseService = inject(EntrepriseService);
   private readonly notificationService = inject(NotificationService);
   protected readonly chatService = inject(ChatService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly locales: Locale[] = ['en', 'fr', 'ar'];
   protected readonly menuItems = signal<MenuDto[]>([]);
-  protected readonly availableEntreprises = signal<EntrepriseDto[]>([]);
   protected readonly unreadNotificationCount = signal(0);
 
   protected readonly entrepriseSelectValue = computed(() => this.tenant.currentEntrepriseId()?.toString() ?? '');
@@ -40,14 +36,6 @@ export class Header {
     effect(() => {
       if (this.auth.isAuthenticated()) {
         this.menuService.getMine().subscribe((items) => this.menuItems.set(items));
-      }
-    });
-
-    effect(() => {
-      if (this.auth.isAuthenticated()) {
-        this.entrepriseService.getMine().subscribe((entreprises) => this.availableEntreprises.set(entreprises));
-      } else {
-        this.availableEntreprises.set([]);
       }
     });
 

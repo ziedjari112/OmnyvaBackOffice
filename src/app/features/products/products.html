@@ -39,7 +39,7 @@
           <td>{{ product.name }}</td>
           <td>{{ product.familyName || '—' }}</td>
           <td>{{ entrepriseName(product.entrepriseId) }}</td>
-          <td>{{ product.price }}</td>
+          <td>{{ product.price | money: tenant.currentCurrency() }}</td>
           <td>{{ product.stockQuantity }}</td>
           <td>{{ product.loyaltyPoints }}</td>
           <td>

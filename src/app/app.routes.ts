@@ -80,6 +80,41 @@ export const routes: Routes = [
     loadComponent: () => import('./features/suppliers/suppliers').then((m) => m.Suppliers)
   },
   {
+    path: 'subscription-plans',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/subscription-plans/subscription-plans').then((m) => m.SubscriptionPlans)
+  },
+  {
+    path: 'entreprise-hours',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/entreprise-hours/entreprise-hours').then((m) => m.EntrepriseHours)
+  },
+  {
+    path: 'attendance',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/attendance/attendance').then((m) => m.Attendance)
+  },
+  {
+    path: 'payroll-config',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/payroll-config/payroll-config').then((m) => m.PayrollConfig)
+  },
+  {
+    path: 'payroll',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/payroll/payroll').then((m) => m.Payroll)
+  },
+  {
+    path: 'payroll/staff/:staffId',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/payroll/staff-history/staff-history').then((m) => m.StaffHistory)
+  },
+  {
+    path: 'my-wallet',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/my-wallet/my-wallet').then((m) => m.MyWallet)
+  },
+  {
     path: 'my-reservations',
     canActivate: [authGuard],
     loadComponent: () => import('./features/my-reservations/my-reservations').then((m) => m.MyReservations)

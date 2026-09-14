@@ -1,0 +1,3 @@
+<div class="subscription-banner">
+  {{ 'subscription.expiringSoon' | translate: { days: subscriptionStatus.status()?.daysUntilExpiry ?? 0 } }}
+</div>

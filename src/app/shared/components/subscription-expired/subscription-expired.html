@@ -1,0 +1,31 @@
+<div class="subscription-expired">
+  <div class="card">
+    <h1>{{ 'subscription.expiredTitle' | translate }}</h1>
+    <p>{{ 'subscription.expiredMessage' | translate }}</p>
+
+    @if (subscriptionStatus.status(); as status) {
+      @if (status.hasSubscription) {
+        <div class="details">
+          <div>
+            <span class="muted">{{ 'subscription.plan' | translate }}</span>
+            <span>{{ status.planName }} ({{ (status.isTrial ? 'subscription.trial' : 'subscription.paid') | translate }})</span>
+          </div>
+          <div>
+            <span class="muted">{{ 'entreprises.subscriptionStart' | translate }}</span>
+            <span>{{ status.startDate }}</span>
+          </div>
+          <div>
+            <span class="muted">{{ 'entreprises.subscriptionEnd' | translate }}</span>
+            <span>{{ status.endDate }}</span>
+          </div>
+          <div>
+            <span class="muted">{{ 'subscription.finalPrice' | translate }}</span>
+            <span>{{ status.finalPrice | money: 'TND' }}</span>
+          </div>
+        </div>
+      }
+    }
+
+    <button class="btn" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
+  </div>
+</div>

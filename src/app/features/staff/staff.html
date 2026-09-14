@@ -19,6 +19,7 @@
   } @else {
     <table>
       <tr>
+        <th></th>
         <th>{{ 'staff.name' | translate }}</th>
         <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'staff.phone' | translate }}</th>
@@ -27,6 +28,11 @@
       </tr>
       @for (member of staff(); track member.id) {
         <tr>
+          <td>
+            @if (member.photoUrl) {
+              <img [src]="uploadService.toAbsoluteUrl(member.photoUrl)" class="thumb" alt="" />
+            }
+          </td>
           <td>{{ member.name }}</td>
           <td>{{ entrepriseName(member.entrepriseId) }}</td>
           <td>{{ member.phone }}</td>
@@ -85,6 +91,15 @@
             {{ 'auth.field.email' | translate }}
             <input type="email" name="email" [ngModel]="form().email" (ngModelChange)="form.update((f) => ({ ...f, email: $event }))" />
           </label>
+          <label class="full">
+            {{ 'staff.photo' | translate }}
+            <input type="file" accept="image/*" (change)="onPhotoSelected($event)" [disabled]="uploadingPhoto()" />
+          </label>
+          @if (uploadingPhoto()) {
+            <p class="muted full">{{ 'common.loading' | translate }}</p>
+          } @else if (form().photoUrl) {
+            <img [src]="uploadService.toAbsoluteUrl(form().photoUrl)" class="thumb-preview" alt="" />
+          }
         </div>
 
         @if (editingId()) {

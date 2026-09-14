@@ -1,0 +1,38 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'attendance.title' | translate }}</h1>
+    <input type="date" [ngModel]="date()" (ngModelChange)="onDateChange($event)" />
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (rows().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'staff.name' | translate }}</th>
+        <th>{{ 'attendance.status' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (row of rows(); track row.staffId) {
+        <tr [class.muted]="row.isDefaultDayOff">
+          <td>{{ row.staffName }}</td>
+          <td>
+            @if (row.isDefaultDayOff) {
+              <span class="badge neutral">{{ 'attendance.off' | translate }}</span>
+            }
+            <span class="badge" [class.success]="row.isPresent" [class.danger]="!row.isPresent">
+              {{ (row.isPresent ? 'attendance.present' : 'attendance.absent') | translate }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="togglePresent(row)">
+              {{ (row.isPresent ? 'attendance.markAbsent' : 'attendance.markPresent') | translate }}
+            </button>
+          </td>
+        </tr>
+      }
+    </table>
+  }
+</div>
