@@ -1,0 +1,127 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'stockArticles.title' | translate }}</h1>
+  </div>
+
+  <input
+    type="search"
+    class="search-input"
+    [ngModel]="searchTerm()"
+    (ngModelChange)="searchTerm.set($event)"
+    [placeholder]="'common.search' | translate"
+  />
+
+  <div class="filters-row">
+    <label>
+      {{ 'stockArticles.filter.entreprise' | translate }}
+      <select [ngModel]="entrepriseFilter() ?? ''" (ngModelChange)="onEntrepriseFilterChange($event)">
+        <option value="">{{ 'stockArticles.filter.allEntreprises' | translate }}</option>
+        @for (entreprise of entreprises(); track entreprise.id) {
+          <option [value]="entreprise.id">{{ entreprise.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      {{ 'stockArticles.filter.family' | translate }}
+      <select [ngModel]="familyFilter() ?? ''" (ngModelChange)="familyFilter.set($event ? +$event : null)">
+        <option value="">{{ 'stockArticles.filter.allFamilies' | translate }}</option>
+        @for (family of familiesForFilter(); track family.id) {
+          <option [value]="family.id">{{ family.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      {{ 'stockArticles.filter.stockStatus' | translate }}
+      <select [ngModel]="stockStatusFilter()" (ngModelChange)="stockStatusFilter.set($event)">
+        <option value="all">{{ 'stockArticles.filter.allStock' | translate }}</option>
+        <option value="inStock">{{ 'stockArticles.filter.inStock' | translate }}</option>
+        <option value="outOfStock">{{ 'stockArticles.filter.outOfStock' | translate }}</option>
+      </select>
+    </label>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (filteredProducts().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'products.name' | translate }}</th>
+        <th>{{ 'families.title' | translate }}</th>
+        <th>{{ 'staff.entreprise' | translate }}</th>
+        <th>{{ 'products.price' | translate }}</th>
+        <th>{{ 'stockArticles.currentStock' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (product of filteredProducts(); track product.id) {
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.familyName || '—' }}</td>
+          <td>{{ entrepriseName(product.entrepriseId) }}</td>
+          <td>{{ product.price | money: tenant.currentCurrency() }}</td>
+          <td>
+            <span class="badge" [class.success]="product.stockQuantity > 0" [class.danger]="product.stockQuantity <= 0">
+              {{ product.stockQuantity }}
+            </span>
+          </td>
+          <td class="row-actions">
+            <button class="btn" (click)="openHistory(product)">{{ 'stockArticles.viewDetails' | translate }}</button>
+          </td>
+        </tr>
+      }
+    </table>
+  }
+
+  @if (historyProduct(); as product) {
+    <div class="modal-backdrop" (click)="closeHistory()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h2>{{ 'stockArticles.history.title' | translate }} — {{ product.name }}</h2>
+        <p class="muted">
+          {{ 'stockArticles.currentStock' | translate }}: <strong>{{ product.stockQuantity }}</strong>
+        </p>
+
+        @if (historyLoading()) {
+          <p class="muted">{{ 'common.loading' | translate }}</p>
+        } @else if (historyItems().length === 0) {
+          <p class="muted">{{ 'stockArticles.history.empty' | translate }}</p>
+        } @else {
+          <table class="hours-table">
+            <tr>
+              <th>{{ 'stockArticles.history.date' | translate }}</th>
+              <th>{{ 'stockArticles.history.oldStock' | translate }}</th>
+              <th>{{ 'stockArticles.history.newStock' | translate }}</th>
+              <th>{{ 'stockArticles.history.change' | translate }}</th>
+              <th>{{ 'stockArticles.history.source' | translate }}</th>
+            </tr>
+            @for (entry of historyItems(); track entry.id) {
+              <tr>
+                <td>{{ entry.createdAt | date: 'short' }}</td>
+                <td>{{ entry.oldStock }}</td>
+                <td>{{ entry.newStock }}</td>
+                <td>
+                  <span class="badge" [class.success]="entry.newStock >= entry.oldStock" [class.danger]="entry.newStock < entry.oldStock">
+                    {{ entry.newStock - entry.oldStock > 0 ? '+' : '' }}{{ entry.newStock - entry.oldStock }}
+                  </span>
+                </td>
+                <td>
+                  @if (entry.stockMovementId) {
+                    {{ 'stockArticles.history.movement' | translate: { id: entry.stockMovementId } }}
+                  } @else if (entry.orderId) {
+                    {{ 'stockArticles.history.order' | translate: { id: entry.orderId } }}
+                  }
+                </td>
+              </tr>
+            }
+          </table>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn" (click)="closeHistory()">{{ 'common.cancel' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

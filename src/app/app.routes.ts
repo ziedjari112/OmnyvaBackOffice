@@ -75,6 +75,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/stock-movements/stock-movements').then((m) => m.StockMovements)
   },
   {
+    path: 'stock-articles',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/stock-articles/stock-articles').then((m) => m.StockArticles)
+  },
+  {
     path: 'suppliers',
     canActivate: [authGuard],
     loadComponent: () => import('./features/suppliers/suppliers').then((m) => m.Suppliers)

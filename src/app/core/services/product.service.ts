@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ProductDto, ProductUpsertDto } from '../models/product.model';
+import { ProductDto, ProductUpsertDto, StockArticleDto } from '../models/product.model';
 import { BasePaginatedList, BasePaginatedQuery } from '../models/pagination.model';
 
 @Injectable({ providedIn: 'root' })
@@ -25,5 +25,11 @@ export class ProductService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  /** Full audit trail of stock-level changes for one product — every stock movement and every
+   * order that consumed it, newest first. */
+  getStockHistory(id: number): Observable<StockArticleDto[]> {
+    return this.http.get<StockArticleDto[]>(`${this.baseUrl}/${id}/stock-history`);
   }
 }
