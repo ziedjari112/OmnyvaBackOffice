@@ -13,6 +13,7 @@ export const TRANSLATIONS: Record<Locale, Dict> = {
     'dashboard.staff': 'Staff',
     'dashboard.products': 'Products',
     'dashboard.services': 'Services',
+    'dashboard.orders': 'Orders',
     'nav.entreprise.all': 'All (global)',
     'nav.entreprise.label': 'Acting as',
 
@@ -389,6 +390,7 @@ export const TRANSLATIONS: Record<Locale, Dict> = {
     'dashboard.staff': 'Personnel',
     'dashboard.products': 'Produits',
     'dashboard.services': 'Services',
+    'dashboard.orders': 'Commandes',
     'nav.entreprise.all': 'Toutes (global)',
     'nav.entreprise.label': 'Agir en tant que',
 
@@ -765,6 +767,7 @@ export const TRANSLATIONS: Record<Locale, Dict> = {
     'dashboard.staff': 'الموظفون',
     'dashboard.products': 'المنتجات',
     'dashboard.services': 'الخدمات',
+    'dashboard.orders': 'الطلبات',
     'nav.entreprise.all': 'الكل (عام)',
     'nav.entreprise.label': 'التصرف باسم',
 

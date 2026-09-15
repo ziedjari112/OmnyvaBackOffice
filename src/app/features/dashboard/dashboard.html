@@ -4,10 +4,17 @@
       <div class="page-title">{{ 'dashboard.welcome' | translate }}</div>
       <div class="page-sub">{{ auth.currentUser()?.name }}</div>
     </div>
-    <div class="avatar">{{ initials() }}</div>
+    <a routerLink="/account" class="account-link">
+      @if (myStaff()?.photoUrl) {
+        <img [src]="uploadService.toAbsoluteUrl(myStaff()!.photoUrl)" class="avatar avatar-photo" alt="" />
+      } @else {
+        <div class="avatar">{{ initials() }}</div>
+      }
+      <span class="account-name">{{ auth.currentUser()?.name }}</span>
+    </a>
   </div>
 
-  @if (entreprisesCount() !== null || staffCount() !== null || productsCount() !== null || servicesCount() !== null) {
+  @if (entreprisesCount() !== null || staffCount() !== null || productsCount() !== null || servicesCount() !== null || ordersCount() !== null) {
     <div class="grid4">
       @if (entreprisesCount() !== null) {
         <div class="metric">
@@ -31,6 +38,12 @@
         <div class="metric">
           <div class="label">{{ 'dashboard.services' | translate }}</div>
           <div class="value">{{ servicesCount() }}</div>
+        </div>
+      }
+      @if (ordersCount() !== null) {
+        <div class="metric">
+          <div class="label">{{ 'dashboard.orders' | translate }}</div>
+          <div class="value">{{ ordersCount() }}</div>
         </div>
       }
     </div>
