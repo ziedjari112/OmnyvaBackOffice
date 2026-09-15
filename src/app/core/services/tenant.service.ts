@@ -55,12 +55,15 @@ export class TenantService {
       }
     });
 
-    // A user scoped to exactly one entreprise (e.g. Staff, ResponsableEntreprise) has no reason to see
-    // or use the "acting as" picker — auto-select it so every request is correctly scoped from the start.
+    // A user with only ONE entreprise-scoped role (no global role) has no reason to see or use the
+    // "acting as" picker: auto-select it so every request is correctly scoped from the start, and the
+    // sidebar hides the dropdown (see Header) since there's nothing to pick. A user with a global role
+    // (e.g. SuperAdmin) always keeps the picker — even when they only have one entreprise available —
+    // so they can switch back to the "All entreprises" view, which some pages rely on.
     effect(() => {
-      const ids = this.availableEntrepriseIds();
-      if (this.currentEntrepriseId() === null && !this.hasGlobalRole() && ids.length === 1) {
-        this.currentEntrepriseId.set(ids[0]);
+      const entreprises = this.availableEntreprises();
+      if (this.currentEntrepriseId() === null && !this.hasGlobalRole() && entreprises.length === 1) {
+        this.currentEntrepriseId.set(entreprises[0].id);
       }
     });
   }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export type UploadCategory = 'products' | 'families' | 'staff';
+export type UploadCategory = 'products' | 'families' | 'staff' | 'users';
 
 @Injectable({ providedIn: 'root' })
 export class UploadService {

@@ -208,6 +208,30 @@ h1 {
   border-radius: var(--radius-lg);
   object-fit: cover;
   margin-top: 4px;
+
+  &.placeholder {
+    background: var(--border);
+  }
+}
+
+.photo-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.photo-upload-btn {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.account-card {
+  margin-bottom: 20px;
+
+  .form-grid:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .qr-card {

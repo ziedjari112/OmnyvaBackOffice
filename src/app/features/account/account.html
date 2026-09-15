@@ -6,67 +6,90 @@
   @if (loading()) {
     <p class="muted">{{ 'common.loading' | translate }}</p>
   } @else if (me(); as user) {
-    <div class="form-grid">
-      <label>
-        {{ 'account.name' | translate }}
-        <input type="text" [value]="user.name" disabled />
-      </label>
-      <label>
-        {{ 'auth.field.email' | translate }}
-        <input type="email" [value]="user.email" disabled />
-      </label>
-      <label>
-        {{ 'account.roles' | translate }}
-        <input type="text" [value]="user.roles.join(', ')" disabled />
-      </label>
+    <div class="card account-card">
+      @if (myStaff(); as staff) {
+        <div class="photo-row">
+          @if (staff.photoUrl) {
+            <img [src]="uploadService.toAbsoluteUrl(staff.photoUrl)" class="thumb-preview" alt="" />
+          } @else {
+            <div class="thumb-preview placeholder"></div>
+          }
+          <div>
+            <label class="btn photo-upload-btn">
+              {{ 'account.changePhoto' | translate }}
+              <input type="file" accept="image/*" (change)="onPhotoSelected($event)" [disabled]="uploadingPhoto()" hidden />
+            </label>
+            @if (uploadingPhoto()) {
+              <p class="muted">{{ 'common.loading' | translate }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="form-grid">
+        <label>
+          {{ 'account.name' | translate }}
+          <input type="text" [value]="user.name" disabled />
+        </label>
+        <label>
+          {{ 'auth.field.email' | translate }}
+          <input type="email" [value]="user.email" disabled />
+        </label>
+        <label>
+          {{ 'account.roles' | translate }}
+          <input type="text" [value]="user.roles.join(', ')" disabled />
+        </label>
+      </div>
     </div>
 
-    <h2 class="coord-label">{{ 'account.changePassword' | translate }}</h2>
-    <form class="form-grid" (ngSubmit)="changePassword()">
-      <label class="full">
-        {{ 'account.currentPassword' | translate }}
-        <input
-          type="password"
-          name="currentPassword"
-          [ngModel]="passwordForm().currentPassword"
-          (ngModelChange)="updatePasswordField('currentPassword', $event)"
-          required
-        />
-      </label>
-      <label>
-        {{ 'account.newPassword' | translate }}
-        <input
-          type="password"
-          name="newPassword"
-          [ngModel]="passwordForm().newPassword"
-          (ngModelChange)="updatePasswordField('newPassword', $event)"
-          required
-          minlength="8"
-        />
-      </label>
-      <label>
-        {{ 'account.confirmNewPassword' | translate }}
-        <input
-          type="password"
-          name="confirmNewPassword"
-          [ngModel]="passwordForm().confirmNewPassword"
-          (ngModelChange)="updatePasswordField('confirmNewPassword', $event)"
-          required
-        />
-      </label>
+    <div class="card account-card">
+      <h2 class="coord-label">{{ 'account.changePassword' | translate }}</h2>
+      <form class="form-grid" (ngSubmit)="changePassword()">
+        <label class="full">
+          {{ 'account.currentPassword' | translate }}
+          <input
+            type="password"
+            name="currentPassword"
+            [ngModel]="passwordForm().currentPassword"
+            (ngModelChange)="updatePasswordField('currentPassword', $event)"
+            required
+          />
+        </label>
+        <label>
+          {{ 'account.newPassword' | translate }}
+          <input
+            type="password"
+            name="newPassword"
+            [ngModel]="passwordForm().newPassword"
+            (ngModelChange)="updatePasswordField('newPassword', $event)"
+            required
+            minlength="8"
+          />
+        </label>
+        <label>
+          {{ 'account.confirmNewPassword' | translate }}
+          <input
+            type="password"
+            name="confirmNewPassword"
+            [ngModel]="passwordForm().confirmNewPassword"
+            (ngModelChange)="updatePasswordField('confirmNewPassword', $event)"
+            required
+          />
+        </label>
 
-      @if (passwordError()) {
-        <p class="error full">{{ passwordError()! | translate }}</p>
-      }
-      @if (passwordSuccess()) {
-        <p class="muted full">{{ 'account.password.success' | translate }}</p>
-      }
+        @if (passwordError()) {
+          <p class="error full">{{ passwordError()! | translate }}</p>
+        }
+        @if (passwordSuccess()) {
+          <p class="muted full">{{ 'account.password.success' | translate }}</p>
+        }
 
-      <div class="modal-actions full">
-        <button type="submit" class="btn primary" [disabled]="changingPassword()">
-          {{ 'common.save' | translate }}
-        </button>
-      </div>
-    </form>
+        <div class="modal-actions full">
+          <button type="submit" class="btn primary" [disabled]="changingPassword()">
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
   }
 </div>

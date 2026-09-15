@@ -4,6 +4,23 @@
     <div class="name">{{ 'app.name' | translate }}</div>
   </a>
 
+  <div class="sb-top">
+    <select
+      class="entreprise-select"
+      [value]="entrepriseSelectValue()"
+      (change)="onEntrepriseChange($any($event.target).value)"
+    >
+      <option value="">{{ 'nav.entreprise.all' | translate }}</option>
+      @for (entreprise of tenant.availableEntreprises(); track entreprise.id) {
+        <option [value]="entreprise.id">{{ entreprise.name }}</option>
+      }
+    </select>
+
+    <a routerLink="/account" routerLinkActive="active" class="sb-item">
+      <span class="dot"></span>{{ 'account.title' | translate }}
+    </a>
+  </div>
+
   <nav class="sb-nav">
     @for (item of menuItems(); track item.id) {
       @if (item.children.length > 0) {
@@ -28,19 +45,6 @@
   </nav>
 
   <div class="sb-footer">
-    @if (tenant.availableEntreprises().length > 0) {
-      <select
-        class="entreprise-select"
-        [value]="entrepriseSelectValue()"
-        (change)="onEntrepriseChange($any($event.target).value)"
-      >
-        <option value="">{{ 'nav.entreprise.all' | translate }}</option>
-        @for (entreprise of tenant.availableEntreprises(); track entreprise.id) {
-          <option [value]="entreprise.id">{{ entreprise.name }}</option>
-        }
-      </select>
-    }
-
     <div class="lang-switch">
       @for (locale of locales; track locale) {
         <button
@@ -53,10 +57,6 @@
         </button>
       }
     </div>
-
-    <a routerLink="/account" routerLinkActive="active" class="sb-item">
-      <span class="dot"></span>{{ 'account.title' | translate }}
-    </a>
 
     <button class="btn sb-logout" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
   </div>

@@ -42,4 +42,14 @@ export class StaffService {
   setWorkingHours(id: number, dto: SetStaffWorkingHoursDto): Observable<StaffWorkingHoursDto[]> {
     return this.http.put<StaffWorkingHoursDto[]>(`${this.baseUrl}/${id}/working-hours`, dto);
   }
+
+  /** The Staff record linked to the current user's own account. 404 (via the Observable's error) means
+   * this account isn't linked to a staff member — "My Account" uses that to hide the photo section. */
+  getMine(): Observable<StaffDto> {
+    return this.http.get<StaffDto>(`${this.baseUrl}/me`);
+  }
+
+  updateMyPhoto(photoUrl: string | null): Observable<StaffDto> {
+    return this.http.put<StaffDto>(`${this.baseUrl}/me/photo`, { photoUrl });
+  }
 }

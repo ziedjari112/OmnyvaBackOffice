@@ -23,6 +23,7 @@
         <th>{{ 'staff.name' | translate }}</th>
         <th>{{ 'staff.entreprise' | translate }}</th>
         <th>{{ 'staff.phone' | translate }}</th>
+        <th>{{ 'staff.account' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
         <th></th>
       </tr>
@@ -36,6 +37,15 @@
           <td>{{ member.name }}</td>
           <td>{{ entrepriseName(member.entrepriseId) }}</td>
           <td>{{ member.phone }}</td>
+          <td>
+            @if (member.userId) {
+              <span class="badge success" [title]="'staff.accountLinkedId' | translate: { id: member.userId }">
+                {{ 'staff.accountLinked' | translate }}
+              </span>
+            } @else {
+              <span class="badge neutral">{{ 'staff.accountNotLinked' | translate }}</span>
+            }
+          </td>
           <td>
             <span class="badge" [class.success]="member.isActive" [class.neutral]="!member.isActive">
               {{ (member.isActive ? 'common.active' : 'common.inactive') | translate }}
