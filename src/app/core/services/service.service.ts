@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ServiceDto, ServiceUpsertDto } from '../models/service.model';
+import { StaffDto } from '../models/staff.model';
 import { BasePaginatedList, BasePaginatedQuery } from '../models/pagination.model';
 
 @Injectable({ providedIn: 'root' })
@@ -13,6 +14,11 @@ export class ServiceService {
 
   getPaged(query: BasePaginatedQuery): Observable<BasePaginatedList<ServiceDto>> {
     return this.http.post<BasePaginatedList<ServiceDto>>(`${this.baseUrl}/list`, query);
+  }
+
+  /** Staff members able to perform this service. */
+  getStaff(id: number): Observable<StaffDto[]> {
+    return this.http.get<StaffDto[]>(`${this.baseUrl}/${id}/staff`);
   }
 
   create(dto: ServiceUpsertDto): Observable<ServiceDto> {

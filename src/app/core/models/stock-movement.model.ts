@@ -1,4 +1,4 @@
-export type StockMovementType = 'Receipt' | 'Adjustment';
+export type StockMovementType = 'Receipt' | 'Adjustment' | 'Exit' | 'Damage' | 'SupplierReturn';
 
 export interface StockMovementLineDto {
   id: number;
@@ -27,7 +27,8 @@ export interface StockMovementDto {
 
 export interface CreateStockMovementLineDto {
   productId: number;
-  /** Positive for a receipt. For an Adjustment, may be negative to decrease stock. */
+  /** Positive for a receipt. For an Adjustment, may be negative to decrease stock.
+   * For an Exit, enter a positive quantity — it is stored internally as negative. */
   quantity: number;
   /** Exactly one of unitPriceHT / unitPriceTTC for a Receipt line; both omitted for an Adjustment line. */
   unitPriceHT?: number | null;

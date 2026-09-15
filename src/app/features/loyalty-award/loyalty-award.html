@@ -33,6 +33,7 @@
         <strong>{{ customer()!.name }}</strong> — {{ customer()!.email }}
       </div>
 
+      <h2>{{ 'products.title' | translate }}</h2>
       <div class="line-row">
         <select [ngModel]="newLineProductId()" (ngModelChange)="newLineProductId.set($event ? +$event : null)">
           <option [ngValue]="null">{{ 'loyalty.award.selectProduct' | translate }}</option>
@@ -63,12 +64,60 @@
         </table>
       }
 
+      <h2>{{ 'services.title' | translate }}</h2>
+      <div class="line-row">
+        <select [ngModel]="newLineServiceId()" (ngModelChange)="onServiceSelected($event ? +$event : null)">
+          <option [ngValue]="null">{{ 'loyalty.award.selectService' | translate }}</option>
+          @for (service of servicesForCurrentEntreprise; track service.id) {
+            <option [value]="service.id">{{ service.name }} ({{ service.loyaltyPoints }} pts)</option>
+          }
+        </select>
+        <select
+          [ngModel]="newLineStaffId()"
+          (ngModelChange)="newLineStaffId.set($event ? +$event : null)"
+          [disabled]="!newLineServiceId() || loadingStaff()"
+        >
+          <option [ngValue]="null">{{ 'loyalty.award.selectStaff' | translate }}</option>
+          @for (staff of staffOptions(); track staff.id) {
+            <option [value]="staff.id">{{ staff.name }}</option>
+          }
+        </select>
+        <button type="button" class="btn" [disabled]="!newLineServiceId() || !newLineStaffId()" (click)="addServiceLine()">
+          {{ 'common.add' | translate }}
+        </button>
+      </div>
+
+      @if (serviceLines().length > 0) {
+        <table>
+          <tr>
+            <th>{{ 'services.title' | translate }}</th>
+            <th>{{ 'staff.title' | translate }}</th>
+            <th></th>
+          </tr>
+          @for (line of serviceLines(); track line.serviceId + '-' + line.staffId) {
+            <tr>
+              <td>{{ line.serviceName }}</td>
+              <td>{{ line.staffName }}</td>
+              <td class="row-actions">
+                <button class="btn danger" (click)="removeServiceLine(line.serviceId, line.staffId)">
+                  {{ 'common.delete' | translate }}
+                </button>
+              </td>
+            </tr>
+          }
+        </table>
+      }
+
       @if (submitError()) {
         <p class="error">{{ submitError()! | translate }}</p>
       }
 
       <div class="modal-actions">
-        <button class="btn primary" [disabled]="submitting() || lines().length === 0" (click)="submit()">
+        <button
+          class="btn primary"
+          [disabled]="submitting() || (lines().length === 0 && serviceLines().length === 0)"
+          (click)="submit()"
+        >
           {{ 'loyalty.award.submit' | translate }}
         </button>
       </div>

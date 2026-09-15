@@ -39,7 +39,7 @@ export class StockMovements {
   private readonly productService = inject(ProductService);
   private readonly i18n = inject(I18nService);
 
-  readonly types: StockMovementType[] = ['Receipt', 'Adjustment'];
+  readonly types: StockMovementType[] = ['Receipt', 'Adjustment', 'Exit'];
 
   readonly movements = signal<StockMovementDto[]>([]);
   readonly suppliers = signal<SupplierDto[]>([]);
@@ -116,7 +116,7 @@ export class StockMovements {
 
   onTypeChange(value: StockMovementType): void {
     this.type.set(value);
-    if (value === 'Adjustment') this.supplierId.set(null);
+    if (value === 'Adjustment' || value === 'Exit') this.supplierId.set(null);
   }
 
   updateDraftLine<K extends keyof DraftLine>(field: K, value: DraftLine[K]): void {

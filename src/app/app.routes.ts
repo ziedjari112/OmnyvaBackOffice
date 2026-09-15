@@ -50,6 +50,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reservations/reservations').then((m) => m.Reservations)
   },
   {
+    path: 'customer-returns',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/customer-returns/customer-returns').then((m) => m.CustomerReturns)
+  },
+  {
     path: 'users',
     canActivate: [authGuard],
     loadComponent: () => import('./features/users/users').then((m) => m.Users)

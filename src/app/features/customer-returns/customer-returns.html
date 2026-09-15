@@ -1,0 +1,109 @@
+<div class="page-container">
+  <div class="toolbar">
+    <h1>{{ 'customerReturns.title' | translate }}</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="muted">{{ 'common.loading' | translate }}</p>
+  } @else if (returns().length === 0) {
+    <p class="muted">{{ 'common.empty' | translate }}</p>
+  } @else {
+    <table>
+      <tr>
+        <th>{{ 'customerReturns.order' | translate }}</th>
+        <th>{{ 'orders.customer' | translate }}</th>
+        <th>{{ 'common.status' | translate }}</th>
+        <th>{{ 'orders.date' | translate }}</th>
+        <th></th>
+      </tr>
+      @for (customerReturn of returns(); track customerReturn.id) {
+        <tr>
+          <td>#{{ customerReturn.orderId }}</td>
+          <td>{{ customerReturn.clientName }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.success]="customerReturn.status === 'Approved'"
+              [class.danger]="customerReturn.status === 'Rejected'"
+            >
+              {{ ('customerReturns.status.' + customerReturn.status) | translate }}
+            </span>
+          </td>
+          <td>{{ customerReturn.createdAt | date: 'short' }}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn" (click)="toggleExpand(customerReturn)">
+                {{ (expandedId() === customerReturn.id ? 'common.hide' : 'stockMovements.viewLines') | translate }}
+              </button>
+              @if (customerReturn.status === 'Pending') {
+                <button class="btn primary" [disabled]="busyId() === customerReturn.id" (click)="approve(customerReturn)">
+                  {{ 'customerReturns.approve' | translate }}
+                </button>
+                <button class="btn danger" [disabled]="busyId() === customerReturn.id" (click)="openRejectDialog(customerReturn)">
+                  {{ 'customerReturns.reject' | translate }}
+                </button>
+              }
+            </div>
+            @if (errorId() === customerReturn.id && errorMessage()) {
+              <p class="error">{{ errorMessage() }}</p>
+            }
+          </td>
+        </tr>
+        @if (expandedId() === customerReturn.id) {
+          <tr>
+            <td colspan="5">
+              <table class="hours-table">
+                <tr>
+                  <th>{{ 'orders.line.item' | translate }}</th>
+                  <th>{{ 'stockMovements.quantity' | translate }}</th>
+                  <th>{{ 'customerReturns.reason' | translate }}</th>
+                </tr>
+                @for (line of customerReturn.lines; track line.id) {
+                  <tr>
+                    <td>{{ line.productName }}</td>
+                    <td>{{ line.quantity }}</td>
+                    <td>{{ line.reason || '—' }}</td>
+                  </tr>
+                }
+              </table>
+              @if (customerReturn.staffNote) {
+                <p class="muted">{{ 'customerReturns.staffNote' | translate }}: {{ customerReturn.staffNote }}</p>
+              }
+            </td>
+          </tr>
+        }
+        @if (rejectDialogId() === customerReturn.id) {
+          <tr class="cancel-dialog-row">
+            <td colspan="5">
+              <div class="cancel-dialog">
+                <label>
+                  {{ 'customerReturns.rejectReason' | translate }}
+                  <input
+                    type="text"
+                    [ngModel]="rejectReason()"
+                    (ngModelChange)="rejectReason.set($event)"
+                    [placeholder]="'customerReturns.rejectReasonPlaceholder' | translate"
+                  />
+                </label>
+                <button class="btn danger" [disabled]="busyId() === customerReturn.id" (click)="confirmReject(customerReturn)">
+                  {{ 'customerReturns.confirmReject' | translate }}
+                </button>
+                <button class="btn" (click)="closeRejectDialog()">{{ 'common.cancel' | translate }}</button>
+              </div>
+            </td>
+          </tr>
+        }
+      }
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">
+        {{ 'common.previous' | translate }}
+      </button>
+      <span>{{ 'common.page' | translate: { current: pageNumber(), total: totalPages() } }}</span>
+      <button class="btn" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">
+        {{ 'common.next' | translate }}
+      </button>
+    </div>
+  }
+</div>

@@ -14,6 +14,7 @@
         <th>{{ 'myReservations.customer' | translate }}</th>
         <th>{{ 'myReservations.scheduledAt' | translate }}</th>
         <th>{{ 'common.status' | translate }}</th>
+        <th></th>
       </tr>
       @for (reservation of reservations(); track reservation.id) {
         <tr>
@@ -25,7 +26,55 @@
               {{ ('myReservations.status.' + reservation.status) | translate }}
             </span>
           </td>
+          <td>
+            <div class="row-actions">
+              @if (reservation.status === 'Pending') {
+                <button class="btn" [disabled]="busyId() === reservation.id" (click)="confirm(reservation)">
+                  {{ 'myReservations.confirm' | translate }}
+                </button>
+              }
+              @if (reservation.status === 'Pending' || reservation.status === 'Confirmed') {
+                <button class="btn primary" [disabled]="busyId() === reservation.id" (click)="complete(reservation)">
+                  {{ 'myReservations.complete' | translate }}
+                </button>
+              }
+              @if (reservation.status === 'Pending') {
+                <button class="btn danger" [disabled]="busyId() === reservation.id" (click)="decline(reservation)">
+                  {{ 'myReservations.decline' | translate }}
+                </button>
+              }
+              @if (reservation.status === 'Confirmed') {
+                <button class="btn danger" [disabled]="busyId() === reservation.id" (click)="openCancelDialog(reservation)">
+                  {{ 'myReservations.cancelReservation' | translate }}
+                </button>
+              }
+            </div>
+            @if (errorId() === reservation.id && errorMessage()) {
+              <p class="error">{{ errorMessage() }}</p>
+            }
+          </td>
         </tr>
+        @if (cancelDialogId() === reservation.id) {
+          <tr class="cancel-dialog-row">
+            <td colspan="5">
+              <div class="cancel-dialog">
+                <label>
+                  {{ 'myReservations.cancelReason' | translate }}
+                  <input
+                    type="text"
+                    [ngModel]="cancelReason()"
+                    (ngModelChange)="cancelReason.set($event)"
+                    [placeholder]="'myReservations.cancelReasonPlaceholder' | translate"
+                  />
+                </label>
+                <button class="btn danger" [disabled]="busyId() === reservation.id" (click)="confirmCancel(reservation)">
+                  {{ 'myReservations.confirmCancel' | translate }}
+                </button>
+                <button class="btn" (click)="closeCancelDialog()">{{ 'common.cancel' | translate }}</button>
+              </div>
+            </td>
+          </tr>
+        }
       }
     </table>
 

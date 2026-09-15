@@ -25,4 +25,19 @@ export class ReservationService {
   getForStaff(query: BasePaginatedQuery): Observable<BasePaginatedList<ReservationDto>> {
     return this.http.post<BasePaginatedList<ReservationDto>>(`${this.baseUrl}/staff/list`, query);
   }
+
+  /** Staff acknowledges a Pending reservation, moving it to Confirmed. */
+  confirm(id: number): Observable<ReservationDto> {
+    return this.http.post<ReservationDto>(`${this.baseUrl}/${id}/confirm`, null);
+  }
+
+  /** Closes the reservation as Completed once the service has been performed. */
+  complete(id: number): Observable<ReservationDto> {
+    return this.http.post<ReservationDto>(`${this.baseUrl}/${id}/complete`, null);
+  }
+
+  /** Staff declines a Pending reservation, or cancels a Confirmed one, optionally with a reason. */
+  cancel(id: number, reason?: string): Observable<ReservationDto> {
+    return this.http.post<ReservationDto>(`${this.baseUrl}/${id}/cancel`, { reason: reason ?? null });
+  }
 }

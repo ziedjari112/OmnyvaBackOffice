@@ -21,7 +21,13 @@
       @for (movement of movements(); track movement.id) {
         <tr>
           <td>
-            <span class="badge" [class.success]="movement.type === 'Receipt'" [class.neutral]="movement.type === 'Adjustment'">
+            <span
+              class="badge"
+              [class.success]="movement.type === 'Receipt'"
+              [class.neutral]="movement.type === 'Adjustment'"
+              [class.warning]="movement.type === 'Exit'"
+              [class.danger]="movement.type === 'Damage' || movement.type === 'SupplierReturn'"
+            >
               {{ ('stockMovements.type.' + movement.type) | translate }}
             </span>
           </td>

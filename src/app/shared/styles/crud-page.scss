@@ -283,3 +283,25 @@ h1 {
   align-items: center;
   margin-bottom: 10px;
 }
+
+.cancel-dialog-row td {
+  background: var(--surface-2);
+  padding: 12px 16px;
+}
+
+.cancel-dialog {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex: 1;
+    min-width: 220px;
+  }
+}

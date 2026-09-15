@@ -23,6 +23,7 @@ export interface ReservationDto {
   notes?: string | null;
   verificationToken: string;
   checkedInAt?: string | null;
+  cancellationReason?: string | null;
 }
 
 export interface ReservationUpsertDto {
